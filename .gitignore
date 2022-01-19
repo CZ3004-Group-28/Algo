@@ -2,3 +2,4 @@ venv/
 networkx.csv
 test.csv
 .idea/
+__pycache__/
