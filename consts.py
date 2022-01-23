@@ -62,3 +62,12 @@ MOVE_DIRECTION = [
 ]
 
 TURN_FACTOR = 0.1
+
+EXPANDED_CELL = 1 # for both agent and obstacles
+
+AGENT_DIM = 3
+
+WIDTH = 20
+HEIGHT = 20
+
+ITERATIONS = 1000
