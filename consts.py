@@ -49,16 +49,31 @@ class Direction(int, Enum):
         diff = abs(d1 - d2)
         return min(diff, 8 - diff)
 
+    @staticmethod
+    def rotation_angle(d1, d2):# rotation angle from d1->d2, the value could be negative;
+        if d1 <= d2:
+            r = d2 - d1
+            if r >= 4:
+                return -(8 - r)
+            else:
+                return r
+        else:
+            r = d1 - d2
+            if r > 4:
+                return (8 - r)
+            else:
+                return -r
+
 
 MOVE_DIRECTION = [
     (1, 0, Direction.EAST),
     (-1, 0, Direction.WEST),
     (0, 1, Direction.NORTH),
     (0, -1, Direction.SOUTH),
-    (-1, -1, Direction.SOUTH_WEST),
-    (-1, 1, Direction.WEST_NORTH),
-    (1, 1, Direction.NORTH_EAST),
-    (1, -1, Direction.EAST_SOUTH),
+    # (-1, -1, Direction.SOUTH_WEST),
+    # (-1, 1, Direction.WEST_NORTH),
+    # (1, 1, Direction.NORTH_EAST),
+    # (1, -1, Direction.EAST_SOUTH),
 ]
 
 TURN_FACTOR = 0.1
@@ -71,3 +86,4 @@ WIDTH = 20
 HEIGHT = 20
 
 ITERATIONS = 1000
+TURN_RADIUS = 2
