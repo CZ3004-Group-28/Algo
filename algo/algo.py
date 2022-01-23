@@ -19,6 +19,8 @@ class MazeSolver:
     ):
         self.grid = Grid(size_x, size_y)
         self.robot = Robot(robot_x, robot_y, robot_direction)
+        self.path_table = dict()
+        self.cost_table = dict()
 
     def add_obstacle(self, x: int, y: int, direction: Direction):
         obstacle = Obstacle(x, y, direction)
@@ -51,7 +53,7 @@ class MazeSolver:
         for view_position in view_positions:
             items = items + view_position
 
-        cost_table, path_table = self.path_cost_generator(items)
+        self.path_cost_generator(items)
 
         optimal_path = []
         distance = 1e9
@@ -65,14 +67,13 @@ class MazeSolver:
                 cur_index += len(view_position)
 
             cost_np = np.zeros((len(visited_candidates), len(visited_candidates)))
-            print(visited_candidates)
 
             for s in range(len(visited_candidates) - 1):
                 for e in range(s + 1, len(visited_candidates)):
                     u = items[visited_candidates[s]]
                     v = items[visited_candidates[e]]
-                    if (u, v) in cost_table.keys():
-                        cost_np[s][e] = cost_table[(u, v)]
+                    if (u, v) in self.cost_table.keys():
+                        cost_np[s][e] = self.cost_table[(u, v)]
                     else:
                         cost_np[s][e] = 1e9
                     cost_np[e][s] = cost_np[s][e]
@@ -90,7 +91,7 @@ class MazeSolver:
                 from_item = items[visited_candidates[_permutation[i]]]
                 to_item = items[visited_candidates[_permutation[i + 1]]]
 
-                cur_path = path_table[(from_item, to_item)]
+                cur_path = self.path_table[(from_item, to_item)]
                 for j in range(1, len(cur_path)):
                     optimal_path.append(CellState(cur_path[j][0], cur_path[j][1], cur_path[j][2]))
 
@@ -110,12 +111,10 @@ class MazeSolver:
         return neighbors
 
     def path_cost_generator(self, states: [CellState]):
-        path_table = dict()
-        cost_table = dict()
 
         def record_path(start, end, parent: dict, cost: int):
-            cost_table[(start, end)] = cost
-            cost_table[(end, start)] = cost
+            self.cost_table[(start, end)] = cost
+            self.cost_table[(end, start)] = cost
 
             path = []
             cursor = (end.x, end.y, end.direction)
@@ -126,12 +125,12 @@ class MazeSolver:
 
             path.append(cursor)
 
-            path_table[(start, end)] = path[::-1]
-            path_table[(end, start)] = path
+            self.path_table[(start, end)] = path[::-1]
+            self.path_table[(end, start)] = path
 
         def astar_search(start: CellState, end: CellState):
             # astar search algo with three states: x, y, direction
-            if (start, end) in path_table:
+            if (start, end) in self.path_table:
                 return
 
             # use heuristics to guide the search: distance is calculated by f = g + h
@@ -177,8 +176,6 @@ class MazeSolver:
         for i in range(len(states) - 1):
             for j in range(i + 1, len(states)):
                 astar_search(states[i], states[j])
-
-        return cost_table, path_table
 
 
 if __name__ == "__main__":
