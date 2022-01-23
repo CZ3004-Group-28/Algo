@@ -65,7 +65,6 @@ class MazeSolver:
                 cur_index += len(view_position)
 
             cost_np = np.zeros((len(visited_candidates), len(visited_candidates)))
-            print(visited_candidates)
 
             for s in range(len(visited_candidates) - 1):
                 for e in range(s + 1, len(visited_candidates)):
