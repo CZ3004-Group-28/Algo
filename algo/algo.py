@@ -106,8 +106,10 @@ class MazeSolver:
         # assume that after follow this direction, the car direction is EXACTLY md
         for dx, dy, md in MOVE_DIRECTION:
             if md == direction: # if the new direction == md
-                if self.grid.reachable(x + dx, y + dy):
+                if self.grid.reachable(x + dx, y + dy): # go forward;
                     neighbors.append((x + dx, y + dy, md))
+                if self.grid.reachable(x - dx, y - dy): # go back;
+                    neighbors.append((x - dx, y - dy, md))
 
             else: # consider 8 case
                 # north <-> east
