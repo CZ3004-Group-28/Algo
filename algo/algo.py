@@ -4,7 +4,7 @@ import numpy as np
 from random import randint
 from entities.Robot import Robot
 from entities.Entity import Obstacle, CellState, Grid
-from consts import Direction, MOVE_DIRECTION, TURN_FACTOR, ITERATIONS
+from consts import Direction, MOVE_DIRECTION, TURN_FACTOR, ITERATIONS, TURN_RADIUS
 from python_tsp.exact import solve_tsp_dynamic_programming
 
 
@@ -54,6 +54,8 @@ class MazeSolver:
             items = items + view_position
 
         self.path_cost_generator(items)
+        for key in self.cost_table:
+            print(key, self.cost_table[key], end = "\n")
 
         optimal_path = []
         distance = 1e9
@@ -65,7 +67,7 @@ class MazeSolver:
             for view_position in view_positions:
                 visited_candidates.append(cur_index + randint(0, len(view_position) - 1))
                 cur_index += len(view_position)
-
+            print([items[_] for _ in visited_candidates])
             cost_np = np.zeros((len(visited_candidates), len(visited_candidates)))
 
             for s in range(len(visited_candidates) - 1):
@@ -77,10 +79,8 @@ class MazeSolver:
                     else:
                         cost_np[s][e] = 1e9
                     cost_np[e][s] = cost_np[s][e]
-
             cost_np[:, 0] = 0
             _permutation, _distance = solve_tsp_dynamic_programming(cost_np)
-
             if _distance >= distance:
                 continue
 
@@ -97,16 +97,70 @@ class MazeSolver:
 
         return optimal_path, distance
 
-    def get_neighbors(self, x, y):
+    def get_neighbors(self, x, y, direction): #TODO: see the behavior of the robot and adjust...
         """
         Return a list of tuples with format:
         newX, newY, new_direction
         """
         neighbors = []
-
+        # assume that after follow this direction, the car direction is EXACTLY md
         for dx, dy, md in MOVE_DIRECTION:
-            if self.grid.reachable(x + dx, y + dy):
-                neighbors.append((x + dx, y + dy, md))
+            if md == direction: # if the new direction == md
+                if self.grid.reachable(x + dx, y + dy):
+                    neighbors.append((x + dx, y + dy, md))
+
+            else: # consider 8 case
+                # north <-> east
+                if direction == Direction.NORTH and md == Direction.EAST:
+                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS, md))
+
+                if direction == Direction.EAST and md == Direction.NORTH:
+                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS, md))
+
+                # east <-> south
+                if direction == Direction.EAST and md == Direction.SOUTH:
+                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS, md))
+
+                if direction == Direction.SOUTH and md == Direction.EAST:
+                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS, md))
+
+                # south <-> west
+                if direction == Direction.SOUTH and md == Direction.WEST:
+                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS, md))
+
+                if direction == Direction.WEST and md == Direction.SOUTH:
+                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS, md))
+
+                # west <-> north
+                if direction == Direction.WEST and md == Direction.NORTH:
+                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS, md))
+
+                if direction == Direction.NORTH and md == Direction.WEST:
+                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS, md))
 
         return neighbors
 
@@ -156,7 +210,7 @@ class MazeSolver:
                 visited.add((cur_x, cur_y, cur_direction))
                 cur_distance = g_distance[(cur_x, cur_y, cur_direction)]
 
-                for next_x, next_y, new_direction in self.get_neighbors(cur_x, cur_y):
+                for next_x, next_y, new_direction in self.get_neighbors(cur_x, cur_y, cur_direction):
                     if (next_x, next_y, new_direction) in visited:
                         continue
 
