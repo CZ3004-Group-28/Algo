@@ -1,11 +1,11 @@
 import time
-import numpy as np
-import pandas as pd
 
 from consts import Direction
 from algo.algo import MazeSolver
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+
+from utils import command_generator
 
 app = Flask(__name__)
 CORS(app)
@@ -29,12 +29,13 @@ def path_finding():
 
     path_results = []
     for o in optimal_path:
-        path_results.append({'x': o.x, 'y': o.y, 'd': o.direction})
+        path_results.append(o.get_dict())
 
     return jsonify({
         "data": {
             'distance': distance,
-            'path': path_results
+            'path': path_results,
+            'commands': command_generator(optimal_path)
         },
         "error": None
     })

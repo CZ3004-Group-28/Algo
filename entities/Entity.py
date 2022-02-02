@@ -7,6 +7,7 @@ class CellState:
         self.x = x
         self.y = y
         self.direction = direction
+        self.screenshot = False
 
     def cmp_position(self, x, y) -> bool:
         return self.x == x and self.y == y
@@ -16,6 +17,12 @@ class CellState:
 
     def __repr__(self):
         return "x: {}, y: {}, d: {}".format(self.x, self.y, self.direction)
+
+    def set_screenshot(self):
+        self.screenshot = True
+
+    def get_dict(self):
+        return {'x': self.x, 'y': self.y, 'd': self.direction, 's': self.screenshot}
 
 
 class Obstacle(CellState):
@@ -128,7 +135,7 @@ class Grid:
         if not self.is_valid_coord(x, y):
             return False
 
-        for ob in self.obstacles: # handle the virtual expansion of the obstacles
+        for ob in self.obstacles:  # handle the virtual expansion of the obstacles
             if max(abs(ob.x - x), abs(ob.y - y)) < EXPANDED_CELL * 2 + 1:
                 return False
 
@@ -151,8 +158,9 @@ class Grid:
         """
         optimal_positions = []
         for ob in self.obstacles:
-            view_states = [view_state for view_state in ob.get_view_state() if self.reachable(view_state.x, view_state.y)]
-            assert(len(view_states) > 0)
+            view_states = [view_state for view_state in ob.get_view_state() if
+                           self.reachable(view_state.x, view_state.y)]
+            assert (len(view_states) > 0)
             optimal_positions.append(view_states)
 
         return optimal_positions

@@ -1,7 +1,6 @@
 import heapq
 import math
 import numpy as np
-from random import randint
 from entities.Robot import Robot
 from entities.Entity import Obstacle, CellState, Grid
 from consts import Direction, MOVE_DIRECTION, TURN_FACTOR, ITERATIONS, TURN_RADIUS
@@ -49,25 +48,25 @@ class MazeSolver:
         items = [self.robot.get_start_state()]
         # all possible positions to be able to view the obstacles
         view_positions = self.grid.get_view_obstacle_positions()
+        distance = 1e9
 
         for view_position in view_positions:
             items = items + view_position
 
         self.path_cost_generator(items)
-        for key in self.cost_table:
-            print(key, self.cost_table[key], end = "\n")
 
         optimal_path = []
-        distance = 1e9
+        combination = []
+        self.generate_combination(view_positions, 0, [], combination, [ITERATIONS])
 
-        for _ in range(ITERATIONS): # run the algo some times ->
+        for c in combination: # run the algo some times ->
             visited_candidates = [0] # add the start state of the robot
 
             cur_index = 1
-            for view_position in view_positions:
-                visited_candidates.append(cur_index + randint(0, len(view_position) - 1))
+            for index, view_position in enumerate(view_positions):
+                visited_candidates.append(cur_index + c[index])
                 cur_index += len(view_position)
-            print([items[_] for _ in visited_candidates])
+
             cost_np = np.zeros((len(visited_candidates), len(visited_candidates)))
 
             for s in range(len(visited_candidates) - 1):
@@ -95,9 +94,26 @@ class MazeSolver:
                 for j in range(1, len(cur_path)):
                     optimal_path.append(CellState(cur_path[j][0], cur_path[j][1], cur_path[j][2]))
 
+                optimal_path[-1].set_screenshot()
+
         return optimal_path, distance
 
-    def get_neighbors(self, x, y, direction): #TODO: see the behavior of the robot and adjust...
+    @staticmethod
+    def generate_combination(view_positions, index, current, result, iteration_left):
+        if index == len(view_positions):
+            result.append(current[:])
+            return
+
+        if iteration_left[0] == 0:
+            return
+
+        iteration_left[0] -= 1
+        for j in range(len(view_positions[index])):
+            current.append(j)
+            MazeSolver.generate_combination(view_positions, index + 1, current, result, iteration_left)
+            current.pop()
+
+    def get_neighbors(self, x, y, direction):  # TODO: see the behavior of the robot and adjust...
         """
         Return a list of tuples with format:
         newX, newY, new_direction
@@ -105,13 +121,13 @@ class MazeSolver:
         neighbors = []
         # assume that after follow this direction, the car direction is EXACTLY md
         for dx, dy, md in MOVE_DIRECTION:
-            if md == direction: # if the new direction == md
-                if self.grid.reachable(x + dx, y + dy): # go forward;
+            if md == direction:  # if the new direction == md
+                if self.grid.reachable(x + dx, y + dy):  # go forward;
                     neighbors.append((x + dx, y + dy, md))
-                if self.grid.reachable(x - dx, y - dy): # go back;
+                if self.grid.reachable(x - dx, y - dy):  # go back;
                     neighbors.append((x - dx, y - dy, md))
 
-            else: # consider 8 case
+            else:  # consider 8 case
                 # north <-> east
                 if direction == Direction.NORTH and md == Direction.EAST:
                     if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS):

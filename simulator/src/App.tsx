@@ -12,7 +12,7 @@ import {
 	TableBody,
 	TableCell,
 	TableRow,
-	TextField,
+	TextField, Tooltip,
 	Typography
 } from '@mui/material';
 import QueryAPI from "./QueryAPI";
@@ -56,20 +56,21 @@ type CellState = { x: number, y: number, d: Direction };
 // 	{x: 5, y: 9, d: Direction.WEST}
 // ]
 
-type RobotCell = { x: number, y: number, d: Direction | null };
+type RobotCell = { x: number, y: number, d: Direction | null, s: boolean };
 
 const transformCoord = (x: number, y: number) => {
 	return {x: 19 - y, y: x}
 }
 
 function App() {
-	const [robotState, setRobotState] = useState<RobotCell>({x: 1, y: 1, d: Direction.NORTH});
+	const [robotState, setRobotState] = useState<RobotCell>({x: 1, y: 1, d: Direction.NORTH, s: false});
 	const [obstacles, setObstacles] = useState<CellState[]>([]);
 	const [obXInput, setObXInput] = useState<number | undefined>(undefined);
 	const [obYInput, setObYInput] = useState<number | undefined>(undefined);
 	const [directionInput, setDirectionInput] = useState<ObDirection>(ObDirection.NORTH);
 	const [isComputing, setIsComputing] = useState<boolean>(false);
-	const [path, setPath] = useState<CellState[]>([]);
+	const [path, setPath] = useState<RobotCell[]>([]);
+	const [commands, setCommands] = useState<string[]>([]);
 	const [page, setPage] = useState<number>(0);
 
 	const generateRobotCells = () => {
@@ -103,17 +104,18 @@ function App() {
 			for (let j = -1; j < 2; j++) {
 				const coord = transformCoord(robotState.x + i, robotState.y + j);
 				if (markerX === i && markerY === j) {
-					console.log(coord, robotState, markerX, markerY)
 					robotCells.push({
 						x: coord.x,
 						y: coord.y,
 						d: robotState.d,
+						s: robotState.s
 					})
 				} else {
 					robotCells.push({
 						x: coord.x,
 						y: coord.y,
 						d: null,
+						s: false
 					})
 				}
 			}
@@ -128,7 +130,10 @@ function App() {
 			width: 25,
 			height: 25,
 			borderStyle: 'solid',
-			borderWidth: 1,
+			borderTopWidth: 1,
+			borderBottomWidth: 1,
+			borderLeftWidth: 1,
+			borderRightWidth: 1,
 			padding: 0
 		};
 
@@ -202,7 +207,7 @@ function App() {
 				} else if (foundRobotCell) {
 					if (foundRobotCell.d !== null) {
 						cells.push(
-							<TableCell style={{...baseStyle, backgroundColor: 'yellow'}}/>
+							<TableCell style={{...baseStyle, backgroundColor: foundRobotCell.s ? 'red' : 'yellow'}}/>
 						)
 					} else {
 						cells.push(
@@ -298,7 +303,8 @@ function App() {
 		setIsComputing(true);
 		QueryAPI.query(obstacles, (data: any, err: any) => {
 			if (data) {
-				setPath(data.data.path as CellState[]);
+				setPath(data.data.path as RobotCell[]);
+				setCommands(data.data.commands);
 			}
 
 			setIsComputing(false);
@@ -306,9 +312,10 @@ function App() {
 	};
 
 	const onReset = () => {
-		setRobotState({x: 1, y: 1, d: Direction.NORTH});
+		setRobotState({x: 1, y: 1, d: Direction.NORTH, s: false});
 		setPath([]);
-		setObstacles([]);
+		setCommands([]);
+		setPage(0);
 	}
 
 	useEffect(() => {
@@ -387,12 +394,15 @@ function App() {
 				}}>
 					<ChevronLeft/>
 				</IconButton>
-				<Typography style={{paddingTop: 8, marginLeft: 5, marginRight: 5}}>Step: {page + 1} / {path.length}</Typography>
-				<IconButton disabled={page === path.length - 1} onClick={() => {
-					setPage(page + 1)
-				}}>
-					<ChevronRight/>
-				</IconButton>
+				<Typography
+					style={{paddingTop: 8, marginLeft: 5, marginRight: 5}}>Step: {page + 1} / {path.length}</Typography>
+				<Tooltip title={page < commands.length ? commands[page] : ""}>
+					<IconButton disabled={page === path.length - 1} onClick={() => {
+						setPage(page + 1)
+					}}>
+						<ChevronRight/>
+					</IconButton>
+				</Tooltip>
 			</div>}
 
 			<Table style={{width: 'fit-content', marginTop: 20}} aria-label="simple table">
