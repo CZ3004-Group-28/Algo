@@ -13,65 +13,71 @@ def command_generator(states):
             if (states[i].x > states[i - 1].x and states[i].direction == Direction.EAST) or (
                     states[i].y > states[i - 1].y and states[i].direction == Direction.NORTH):
 
-                commands.append("F010")
+                commands.append("FW01")
             else:
-                commands.append("B010")
+                commands.append("BW01")
         elif states[i - 1].direction == Direction.NORTH:
             if states[i].direction == Direction.EAST:
-                # assume the format of turning command is T + backward/forward + degree of turning.
-                # backward is 1 and forward is 0.
-                # degree of turning is the angle forming with the left most one. For now, assume 20 is left, 60 is right
+                # assume there are 4 turning command: FR, FL, BL, BR (the turn command will turn the car 90 degree)
+                # FR00: Forward Right;
+                # FL00: Forward Left;
+                # BR00: Backward Right;
+                # BL00: Backward Left;
                 if states[i].y > states[i - 1].y:
-                    commands.append("T060")
+                    commands.append("FR00")
                 else:
-                    commands.append("T120")
+                    commands.append("BL00")
             elif states[i].direction == Direction.WEST:
                 if states[i].y > states[i - 1].y:
-                    commands.append("T020")
+                    commands.append("FL00")
                 else:
-                    commands.append("T160")
+                    commands.append("BR00")
             else:
                 raise Exception("Invalid turing direction")
         elif states[i - 1].direction == Direction.EAST:
             if states[i].direction == Direction.NORTH:
                 if states[i].y > states[i - 1].y:
-                    commands.append("T020")
+                    commands.append("FL00")
                 else:
-                    commands.append("T160")
+                    commands.append("BR00")
             elif states[i].direction == Direction.SOUTH:
                 if states[i].y > states[i - 1].y:
-                    commands.append("T120")
+                    commands.append("BL00")
                 else:
-                    commands.append("T060")
+                    commands.append("FR00")
             else:
                 raise Exception("Invalid turing direction")
         elif states[i - 1].direction == Direction.SOUTH:
             if states[i].direction == Direction.EAST:
                 if states[i].y > states[i - 1].y:
-                    commands.append("T160")
+                    commands.append("BR00")
                 else:
-                    commands.append("T020")
+                    commands.append("FL00")
             elif states[i].direction == Direction.WEST:
                 if states[i].y > states[i - 1].y:
-                    commands.append("T120")
+                    commands.append("BL00")
                 else:
-                    commands.append("T060")
+                    commands.append("FR00")
             else:
                 raise Exception("Invalid turing direction")
         elif states[i - 1].direction == Direction.WEST:
             if states[i].direction == Direction.NORTH:
                 if states[i].y > states[i - 1].y:
-                    commands.append("T060")
+                    commands.append("FR00")
                 else:
-                    commands.append("T120")
+                    commands.append("BL00")
             elif states[i].direction == Direction.SOUTH:
                 if states[i].y > states[i - 1].y:
-                    commands.append("T160")
+                    commands.append("BR00")
                 else:
-                    commands.append("T020")
+                    commands.append("FL00")
             else:
                 raise Exception("Invalid turing direction")
         else:
             raise Exception("Invalid position")
 
+        if states[i].screenshot: # take picture command
+            commands.append("SNAP")
+
+    commands.append("STOP") # issue the stop signal
     return commands
