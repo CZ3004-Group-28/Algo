@@ -47,7 +47,7 @@ const DirectionToString = {
 	7: 'West North'
 }
 
-type CellState = { x: number, y: number, d: Direction };
+type CellState = { x: number, y: number, d: Direction, id: number};
 //
 // const obstacles: CellState[] = [
 // 	{x: 10, y: 15, d: Direction.EAST},
@@ -56,14 +56,14 @@ type CellState = { x: number, y: number, d: Direction };
 // 	{x: 5, y: 9, d: Direction.WEST}
 // ]
 
-type RobotCell = { x: number, y: number, d: Direction | null, s: boolean };
+type RobotCell = { x: number, y: number, d: Direction | null, s: number };
 
 const transformCoord = (x: number, y: number) => {
 	return {x: 19 - y, y: x}
 }
 
 function App() {
-	const [robotState, setRobotState] = useState<RobotCell>({x: 1, y: 1, d: Direction.NORTH, s: false});
+	const [robotState, setRobotState] = useState<RobotCell>({x: 1, y: 1, d: Direction.NORTH, s: -1});
 	const [obstacles, setObstacles] = useState<CellState[]>([]);
 	const [obXInput, setObXInput] = useState<number | undefined>(undefined);
 	const [obYInput, setObYInput] = useState<number | undefined>(undefined);
@@ -72,6 +72,23 @@ function App() {
 	const [path, setPath] = useState<RobotCell[]>([]);
 	const [commands, setCommands] = useState<string[]>([]);
 	const [page, setPage] = useState<number>(0);
+
+    const generateNewID = () => {
+        while (true){
+            let new_id = Math.floor(Math.random() * 10) + 1;  // just try to generate an id;
+            let ok = true;
+            for (const ob of obstacles){
+                if (ob.id === new_id){
+                    ok=false;
+                    break;
+                }
+            }
+            if (ok){
+                return new_id;
+            }
+        }
+        return -1;
+    }
 
 	const generateRobotCells = () => {
 		const robotCells: RobotCell[] = [];
@@ -115,7 +132,7 @@ function App() {
 						x: coord.x,
 						y: coord.y,
 						d: null,
-						s: false
+						s: -1
 					})
 				}
 			}
@@ -207,7 +224,7 @@ function App() {
 				} else if (foundRobotCell) {
 					if (foundRobotCell.d !== null) {
 						cells.push(
-							<TableCell style={{...baseStyle, backgroundColor: foundRobotCell.s ? 'red' : 'yellow'}}/>
+							<TableCell style={{...baseStyle, backgroundColor: foundRobotCell.s != -1 ? 'red' : 'yellow'}}/>
 						)
 					} else {
 						cells.push(
@@ -277,6 +294,7 @@ function App() {
 			x: obXInput,
 			y: obYInput,
 			d: directionInput as unknown as Direction,
+			id: generateNewID()
 		})
 
 		setObstacles(newObstacles);
@@ -312,7 +330,7 @@ function App() {
 	};
 
 	const onReset = () => {
-		setRobotState({x: 1, y: 1, d: Direction.NORTH, s: false});
+		setRobotState({x: 1, y: 1, d: Direction.NORTH, s: -1});
 		setPath([]);
 		setCommands([]);
 		setPage(0);
