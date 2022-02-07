@@ -14,6 +14,11 @@ def command_generator(states):
                     states[i].y > states[i - 1].y and states[i].direction == Direction.NORTH):
 
                 commands.append("FW01")
+
+            elif (states[i].x < states[i-1].x and states[i].direction == Direction.WEST) or(
+                    states[i].y < states[i-1].y and states[i].direction == Direction.SOUTH):
+                commands.append("FW01")
+
             else:
                 commands.append("BW01")
         elif states[i - 1].direction == Direction.NORTH:
