@@ -21,8 +21,8 @@ class MazeSolver:
         self.path_table = dict()
         self.cost_table = dict()
 
-    def add_obstacle(self, x: int, y: int, direction: Direction):
-        obstacle = Obstacle(x, y, direction)
+    def add_obstacle(self, x: int, y: int, direction: Direction, obstacle_id: int):
+        obstacle = Obstacle(x, y, direction, obstacle_id)
         self.grid.add_obstacle(obstacle)
 
     def reset_obstacles(self):
@@ -94,7 +94,7 @@ class MazeSolver:
                 for j in range(1, len(cur_path)):
                     optimal_path.append(CellState(cur_path[j][0], cur_path[j][1], cur_path[j][2]))
 
-                optimal_path[-1].set_screenshot()
+                optimal_path[-1].set_screenshot(to_item.screenshot_id)
 
         return optimal_path, distance
 

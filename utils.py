@@ -76,8 +76,8 @@ def command_generator(states):
         else:
             raise Exception("Invalid position")
 
-        if states[i].screenshot: # take picture command
-            commands.append("SNAP")
+        if states[i].screenshot_id != -1: # take picture command
+            commands.append("SNAP{}".format(states[i].screenshot_id))
 
     commands.append("STOP") # issue the stop signal
     return commands

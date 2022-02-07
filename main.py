@@ -19,7 +19,7 @@ def path_finding():
     maze_solver = MazeSolver(20, 20, 1, 1, Direction.NORTH)
 
     for ob in obstacles:
-        maze_solver.add_obstacle(ob['x'], ob['y'], ob['d'])
+        maze_solver.add_obstacle(ob['x'], ob['y'], ob['d'], ob['id'])
 
     print("Manual A*")
     start = time.time()
