@@ -45,7 +45,7 @@ Sample json response:
             "FW01",
             "FL00",
             "SNAP1",
-            "STOP"
+            "FIN"
         ],
         "distance": 29.0,
         "path": [

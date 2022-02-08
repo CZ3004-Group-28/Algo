@@ -84,5 +84,5 @@ def command_generator(states):
         if states[i].screenshot_id != -1: # take picture command
             commands.append("SNAP{}".format(states[i].screenshot_id))
 
-    commands.append("STOP") # issue the stop signal
+    commands.append("FIN") # issue the stop signal
     return commands
