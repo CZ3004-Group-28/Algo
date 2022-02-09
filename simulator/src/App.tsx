@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useEffect, useState} from 'react';
+import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
 import './App.css';
 import {
 	Button,
@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import QueryAPI from "./QueryAPI";
 import {ChevronLeft, ChevronRight} from "@mui/icons-material";
+import Timer from "./Timer";
 
 enum Direction {
 	NORTH = 0,
@@ -72,6 +73,8 @@ function App() {
 	const [path, setPath] = useState<RobotCell[]>([]);
 	const [commands, setCommands] = useState<string[]>([]);
 	const [page, setPage] = useState<number>(0);
+	const [isTimeout, setIsTimeout] = useState<boolean>(false);
+	const timerChild = useRef<any>(null);
 
     const generateNewID = () => {
         while (true){
@@ -326,6 +329,10 @@ function App() {
 			}
 
 			setIsComputing(false);
+			if (timerChild.current) {
+				timerChild.current.reset();
+				setIsTimeout(false);
+			}
 		})
 	};
 
@@ -407,7 +414,7 @@ function App() {
 			</Grid>
 
 			{path.length > 0 && <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
-				<IconButton disabled={page === 0} onClick={() => {
+				<IconButton disabled={page === 0 || isTimeout} onClick={() => {
 					setPage(page - 1)
 				}}>
 					<ChevronLeft/>
@@ -415,13 +422,15 @@ function App() {
 				<Typography
 					style={{paddingTop: 8, marginLeft: 5, marginRight: 5}}>Step: {page + 1} / {path.length}</Typography>
 				<Tooltip title={page < commands.length ? commands[page] : ""}>
-					<IconButton disabled={page === path.length - 1} onClick={() => {
+					<IconButton disabled={page === path.length - 1 || isTimeout} onClick={() => {
 						setPage(page + 1)
 					}}>
 						<ChevronRight/>
 					</IconButton>
 				</Tooltip>
 			</div>}
+
+			{path.length > 0 && <Timer ref={timerChild} callback={() => {setIsTimeout(true)}}/>}
 
 			<Table style={{width: 'fit-content', marginTop: 20}} aria-label="simple table">
 				<TableBody>
