@@ -4,11 +4,13 @@ from consts import Direction
 from algo.algo import MazeSolver
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from model import *
 
-from utils import command_generator
+from helper import command_generator
 
 app = Flask(__name__)
 CORS(app)
+model = load_model()
 
 
 @app.route('/path', methods=['POST'])
@@ -38,6 +40,20 @@ def path_finding():
             'commands': command_generator(optimal_path)
         },
         "error": None
+    })
+
+
+@app.route('/image', methods=['POST'])
+def image_predict():
+    content = request.json
+
+    obstacle_id = content["obstacle_id"]
+    image = content["image"]
+    image_id = predict_image(image, model)
+
+    return jsonify({
+        "obstacle_id": obstacle_id,
+        "image_id": image_id
     })
 
 

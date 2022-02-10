@@ -125,3 +125,28 @@ Sample json response:
     },
     "error": null
 }
+```
+
+
+##### 1. POST request to /image:
+
+TODO: updated the api format if required from rpi
+
+For now the image will be "test/" + request["image"] for the model to predict. 
+
+Sample json request body:  
+```bash
+{
+    "obstacle_id" : 1,
+    "image" : "d_1.jpg"
+}
+```
+
+Sample json response:
+
+```bash
+{
+    "image_id": "D",
+    "obstacle_id": 1
+}
+```

@@ -1,5 +1,5 @@
 from consts import Direction, EXPANDED_CELL, MOVE_DIRECTION
-from utils import is_valid
+from helper import is_valid
 
 
 class CellState:
