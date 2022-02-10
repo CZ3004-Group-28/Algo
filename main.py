@@ -45,11 +45,15 @@ def path_finding():
 
 @app.route('/image', methods=['POST'])
 def image_predict():
-    content = request.json
+    # save the image file to the uploads folder
+    file = request.files['file']
+    filename = file.filename
+    file.save(os.path.join('uploads', filename))
 
-    obstacle_id = content["obstacle_id"]
-    image = content["image"]
-    image_id = predict_image(image, model)
+    # perform image recognition
+    # filename format: "<obstacle_id>_<timestamp>.jpeg"
+    obstacle_id = file.filename.split("_")[0]  
+    image_id = predict_image(filename, model)
 
     return jsonify({
         "obstacle_id": obstacle_id,
@@ -58,4 +62,4 @@ def image_predict():
 
 
 if __name__ == '__main__':
-    app.run(host='localhost', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
