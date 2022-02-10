@@ -1,3 +1,5 @@
+uploads/*
+!.gitkeep
 venv/
 networkx.csv
 test.csv
