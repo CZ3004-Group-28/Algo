@@ -128,23 +128,24 @@ Sample json response:
 ```
 
 
-##### 1. POST request to /image:
+##### 2. POST request to /image
 
-TODO: updated the api format if required from rpi
+The image is sent to the API as a file, thus no `base64` encoding required.
 
-For now the image will be "test/" + request["image"] for the model to predict. 
-
-Sample json request body:  
-```bash
-{
-    "obstacle_id" : 1,
-    "image" : "d_1.jpg"
-}
+**Sample Request in Python**
+```python3
+response = requests.post(url, files={"file": (filename, image_data)})
 ```
+- `image_data`: a `bytes` object
 
-Sample json response:
+The API will then perform three operations:
+1. Store the received file into the `/uploads` directory.
+2. Use the model to identify the image.
+3. Return the result as a `json` response.
 
-```bash
+**Sample json response**
+
+```json
 {
     "image_id": "D",
     "obstacle_id": 1
