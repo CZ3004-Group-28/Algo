@@ -151,3 +151,55 @@ The API will then perform three operations:
     "obstacle_id": 1
 }
 ```
+
+##### 3. POST request to /navigate
+
+This will provide commands to the rpi for the obstacles to navigate around an obstacle.
+The command process will be up to rpi side
+
+**Sample Request in Python**
+```python3
+{
+    "robot" : {"x" : 1, "y" : 1, "d" : 0}, 
+    "obstacle" : {"x" : 6, "y" : 6}   
+}
+```
+
+The API then return something like this:
+
+```json
+{
+    "commands": [
+        "FW01",
+        "FW01",
+        "FW01",
+        "FR00",
+        "SNAPE",
+        "BL00",
+        "FW01",
+        "BL00",
+        "BW01",
+        "BR00",
+        "FW01",
+        "SNAPS",
+        "BW01",
+        "FL00",
+        "FW01",
+        "FR00",
+        "BW01",
+        "FR00",
+        "SNAPW",
+        "BL00",
+        "BW01",
+        "BL00",
+        "BW01",
+        "BW01",
+        "BW01",
+        "BW01",
+        "BW01",
+        "FL00",
+        "SNAPN",
+        "FIN"
+    ]
+}
+```

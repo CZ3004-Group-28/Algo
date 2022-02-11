@@ -61,5 +61,41 @@ def image_predict():
     })
 
 
+@app.route('/navigate', methods=['POST'])
+def navigate():
+    def get_direction(d: int) -> str:
+        if d == Direction.NORTH:
+            return "N"
+        if d == Direction.SOUTH:
+            return "S"
+        if d == Direction.EAST:
+            return "E"
+        else:
+            return "W"
+
+    content = request.json
+    obstacle = content["obstacle"]
+    robot = content["robot"]
+
+    maze_solver = MazeSolver(20, 20, robot['x'], robot['y'], robot['d'])
+
+    for d in [0, 2, 4, 6]: # NORTH | EAST | SOUTH | WEST
+        maze_solver.add_obstacle(obstacle['x'], obstacle['y'], d, 1)
+
+    optimal_path, distance = maze_solver.get_optimal_order_dp()
+    commands = command_generator(optimal_path)
+
+    j = 0
+    for i in range(len(commands)):
+        if commands[i].startswith("SNAP"):
+            commands[i] = "SNAP{}".format(get_direction(optimal_path[j].direction))
+        else:
+            j += 1
+
+    return jsonify({
+        "commands": commands
+    })
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
