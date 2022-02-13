@@ -17,6 +17,15 @@ The server will then be run at  ``localhost:5000``
 
 ### API endpoints:
 
+##### 0. Direction of the robot (d)
+```NORTH```: 0
+
+```EAST```: 2
+
+```SOUTH```: 4
+
+```WEST```: 6
+
 ##### 1. POST request to /path:
 Sample json request body:  
 ```bash
