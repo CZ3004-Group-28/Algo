@@ -15,14 +15,19 @@ def predict_image(image,model):
     img = Image.open(os.path.join('uploads', image))
     results = model(img)
     results.save('runs')
-    df_results = results.pandas().xyxy[0].sort_values('confidence', ascending=True)
+    df_results = results.pandas().xyxy[0]
+    df_results['bboxHt'] = df_results['ymax']-df_results['ymin']
+    df_results = df_results.sort_values('bboxHt', ascending=True)
+    # df_results = results.pandas().xyxy[0].sort_values('confidence', ascending=True) #Sort by confidence
     pred_list = df_results['name'].to_numpy()
     pred = 'NA'
-    if pred_list.size != 0:
-        pred = 'Bullseye'
-        for i in pred_list:
-            if i != 'Bullseye':
-                pred = i
+    for i in pred_list:
+        pred = i
+    # if pred_list.size != 0:
+    #     pred = 'Bullseye'
+    #     for i in pred_list:
+    #         if i != 'Bullseye':
+    #             pred = i
     name_to_id = {
         "NA":       'NA',
         "Bullseye": 10,
