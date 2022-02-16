@@ -92,7 +92,12 @@ def navigate():
         else:
             j += 1
 
+    path_results = []
+    for o in optimal_path:
+        path_results.append(o.get_dict())
+
     return jsonify({
+        "path": path_results,
         "commands": commands
     })
 
