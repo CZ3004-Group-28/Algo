@@ -15,6 +15,11 @@ python main.py
 
 The server will then be run at  ``localhost:5000``
 
+### Miscellaneous
+- Raw images from uploaded from the Raspberry Pi are stored at the `uploads` folder.
+- After calling the `image/` endpoint, the annotated image (with bounding box and label) is stored in the `runs` folder.
+- After calling the `stitch/` endpoint, the stitched image is located at `runs/stitched.jpg`
+
 ### API endpoints:
 
 ##### 0. Direction of the robot (d)
@@ -370,3 +375,7 @@ The API then return something like this:
     ]
 }
 ```
+
+##### 4. POST request to /stitch
+This will trigger the `stitch_image()` function.
+- all images found in the `run/` directory will be stitched together and saved at `run/stitched.jpg`

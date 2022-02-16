@@ -55,10 +55,17 @@ def image_predict():
     obstacle_id = file.filename.split("_")[0]  
     image_id = predict_image(filename, model)
 
-    return jsonify({
+    result = {
         "obstacle_id": obstacle_id,
         "image_id": image_id
-    })
+    }
+
+    # only include the "stop" field if the request is for the "navigate around obstacle" feature
+    if obstacle_id in ['N', 'S', 'E', 'W']:
+        # set stop to True if non-bullseye detected
+        result['stop'] = image_id != "10"
+
+    return jsonify(result)
 
 
 @app.route('/navigate', methods=['POST'])
@@ -97,10 +104,17 @@ def navigate():
         path_results.append(o.get_dict())
 
     return jsonify({
-        "path": path_results,
-        "commands": commands
+        "data": {
+            "path": path_results,
+            "commands": commands
+        }
     })
 
+
+@app.route('/stitch', methods=['GET'])
+def stitch():
+    stitch_image()
+    return jsonify({"result": "ok"})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

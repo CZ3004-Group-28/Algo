@@ -1,3 +1,4 @@
+import os
 import torch
 from PIL import Image
 from imutils import paths
@@ -11,7 +12,7 @@ def load_model():
 # Takes in the image from the 'test' folder, and outputs the predicted label - sample at the end
 # Images with predicted bounding boxes are saved in the runs folder
 def predict_image(image,model):
-    img = Image.open('test/' + image)
+    img = Image.open(os.path.join('uploads', image))
     results = model(img)
     results.save('runs')
     df_results = results.pandas().xyxy[0].sort_values('confidence', ascending=True)
@@ -63,7 +64,7 @@ def predict_image(image,model):
 # This function can be called by itself
 def stitch_image():
     imgFolder = 'runs'
-    newPath = 'runs/stitched.jpg'
+    stitchedPath = os.path.join(imgFolder, 'stitched.jpg')
     imgPath = list(paths.list_images(imgFolder))
     images = [Image.open(x) for x in imgPath]
     width, height = zip(*(i.size for i in images))
@@ -74,7 +75,7 @@ def stitch_image():
     for im in images:
         stitchedImg.paste(im, (x_offset,0))
         x_offset += im.size[0]
-    stitchedImg.save(newPath)
+    stitchedImg.save(stitchedPath)
 
 ## Load
 # model = load_model()

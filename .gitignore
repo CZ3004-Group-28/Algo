@@ -1,3 +1,4 @@
+runs/*
 uploads/*
 !.gitkeep
 venv/
