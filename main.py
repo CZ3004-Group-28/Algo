@@ -55,10 +55,17 @@ def image_predict():
     obstacle_id = file.filename.split("_")[0]  
     image_id = predict_image(filename, model)
 
-    return jsonify({
+    result = {
         "obstacle_id": obstacle_id,
         "image_id": image_id
-    })
+    }
+
+    # only include the "stop" field if the request is for the "navigate around obstacle" feature
+    if obstacle_id in ['N', 'S', 'E', 'W']:
+        # set stop to True if non-bullseye detected
+        result['stop'] = image_id != "10"
+
+    return jsonify(result)
 
 
 @app.route('/navigate', methods=['POST'])
