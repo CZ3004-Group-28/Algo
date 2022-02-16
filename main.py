@@ -97,8 +97,10 @@ def navigate():
         path_results.append(o.get_dict())
 
     return jsonify({
-        "path": path_results,
-        "commands": commands
+        "data": {
+            "path": path_results,
+            "commands": commands
+        }
     })
 
 
