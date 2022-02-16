@@ -17,10 +17,14 @@ def predict_image(image,model):
     df_results = results.pandas().xyxy[0].sort_values('confidence', ascending=True)
     pred_list = df_results['name'].to_numpy()
     pred = 'NA'
-    for i in pred_list:
-        if i != 'Bullseye':
-            pred = i
+    if pred_list.size != 0:
+        pred = 'Bullseye'
+        for i in pred_list:
+            if i != 'Bullseye':
+                pred = i
     name_to_id = {
+        "NA":       'NA',
+        "Bullseye": 10,
         "One":      11,
         "Two":      12,
         "Three":    13,
