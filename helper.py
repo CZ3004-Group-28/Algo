@@ -13,14 +13,14 @@ def command_generator(states):
             if (states[i].x > states[i - 1].x and states[i].direction == Direction.EAST) or (
                     states[i].y > states[i - 1].y and states[i].direction == Direction.NORTH):
 
-                commands.append("FW01")
+                commands.append("FW10")
 
             elif (states[i].x < states[i-1].x and states[i].direction == Direction.WEST) or(
                     states[i].y < states[i-1].y and states[i].direction == Direction.SOUTH):
-                commands.append("FW01")
+                commands.append("FW10")
 
             else:
-                commands.append("BW01")
+                commands.append("BW10")
         elif states[i - 1].direction == Direction.NORTH:
             if states[i].direction == Direction.EAST:
                 # assume there are 4 turning command: FR, FL, BL, BR (the turn command will turn the car 90 degree)

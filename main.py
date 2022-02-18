@@ -90,13 +90,16 @@ def navigate():
         maze_solver.add_obstacle(obstacle['x'], obstacle['y'], d, 1)
 
     optimal_path, distance = maze_solver.get_optimal_order_dp()
-    commands = command_generator(optimal_path)
+    _commands = command_generator(optimal_path)
+    commands = []
 
     j = 0
-    for i in range(len(commands)):
-        if commands[i].startswith("SNAP"):
-            commands[i] = "SNAP{}".format(get_direction(optimal_path[j].direction))
+    for i in range(len(_commands)):
+        if _commands[i].startswith("SNAP"):
+            commands.append("SNAP{}".format(get_direction(optimal_path[j].direction)))
+            commands.append("NOOP")# add no-op operation;
         else:
+            commands.append(_commands[i])
             j += 1
 
     path_results = []
