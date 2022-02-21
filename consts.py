@@ -76,7 +76,7 @@ MOVE_DIRECTION = [
     # (1, -1, Direction.EAST_SOUTH),
 ]
 
-TURN_FACTOR = 3
+TURN_FACTOR = 1
 
 EXPANDED_CELL = 1 # for both agent and obstacles
 

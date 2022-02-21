@@ -2,7 +2,7 @@ import heapq
 import math
 import numpy as np
 from entities.Robot import Robot
-from entities.Entity import Obstacle, CellState, Grid
+from entities.Entity import Obstacle, CellState, Grid, GridFastestCar
 from consts import Direction, MOVE_DIRECTION, TURN_FACTOR, ITERATIONS, TURN_RADIUS
 from python_tsp.exact import solve_tsp_dynamic_programming
 
@@ -249,6 +249,184 @@ class MazeSolver:
             for j in range(i + 1, len(states)):
                 astar_search(states[i], states[j])
 
+
+class FastCarSolver:
+    def __init__(self, size_x: int, size_y: int, robot_x: int, robot_y: int, goal_x: int, goal_y: int):
+        self.grid = GridFastestCar(size_x, size_y, robot_x, robot_y, goal_x, goal_y)
+
+    @staticmethod
+    def compute_coord_distance(x1: int, y1: int, x2: int, y2: int, level=1):
+        horizontal_distance = x1 - x2
+        vertical_distance = y1 - y2
+
+        if level == 2:
+            # Euclidean distance
+            return math.sqrt(horizontal_distance ** 2 + vertical_distance ** 2)
+
+        return abs(horizontal_distance) + abs(vertical_distance)
+
+    @staticmethod
+    def compute_state_distance(start_state: CellState, end_state: CellState, level=1):
+        return MazeSolver.compute_coord_distance(start_state.x, start_state.y, end_state.x, end_state.y, level)
+
+    def get_neighbors(self, x, y, direction):  # TODO: see the behavior of the robot and adjust...
+        """
+        Return a list of tuples with format:
+        newX, newY, new_direction
+        """
+        neighbors = []
+        # assume that after follow this direction, the car direction is EXACTLY md
+        for dx, dy, md in MOVE_DIRECTION:
+            if md == direction:  # if the new direction == md
+                if self.grid.reachable(x + dx, y + dy):  # go forward;
+                    neighbors.append((x + dx, y + dy, md))
+                if self.grid.reachable(x - dx, y - dy):  # go back;
+                    neighbors.append((x - dx, y - dy, md))
+
+            else:  # consider 8 case
+                # north <-> east
+                if direction == Direction.NORTH and md == Direction.EAST:
+                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS, md))
+
+                if direction == Direction.EAST and md == Direction.NORTH:
+                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS, md))
+
+                # east <-> south
+                if direction == Direction.EAST and md == Direction.SOUTH:
+                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS, md))
+
+                if direction == Direction.SOUTH and md == Direction.EAST:
+                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS, md))
+
+                # south <-> west
+                if direction == Direction.SOUTH and md == Direction.WEST:
+                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS, md))
+
+                if direction == Direction.WEST and md == Direction.SOUTH:
+                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS, md))
+
+                # west <-> north
+                if direction == Direction.WEST and md == Direction.NORTH:
+                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS, md))
+
+                if direction == Direction.NORTH and md == Direction.WEST:
+                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS, md))
+
+        return neighbors
+
+    def get_path(self):
+        full_path = []
+        cache = dict()
+        cache_dist = dict()
+
+        def record_path(start, end, parent: dict, distance):
+            path = []
+            cursor = (end.x, end.y, end.direction)
+
+            while cursor in parent:
+                path.append(cursor)
+                cursor = parent[cursor]
+
+            for i in reversed(path):
+                full_path.append(CellState(i[0], i[1], i[2]))
+
+            key = (start.x, start.y, start.direction, end.x, end.y, end.direction)
+            cache[key] = path
+            cache_dist[key] = distance
+
+        def astar_search(start: CellState, end: CellState):
+            key = (start.x, start.y, start.direction, end.x, end.y, end.direction)
+            if key in cache:
+                path = cache[key]
+
+                for i in reversed(path):
+                    full_path.append(CellState(i[0], i[1], i[2]))
+
+                return cache_dist[key]
+
+            # use heuristics to guide the search: distance is calculated by f = g + h
+            # g is the actual distance moved so far from the start node to current node
+            # h is the heuristic distance from current node to end node
+            g_distance = {(start.x, start.y, start.direction): 0}
+
+            # format of each item in heap: (f_distance of node, x coord of node, y coord of node)
+            heap = [(self.compute_state_distance(start, end), start.x, start.y, start.direction)]
+            parent = dict()
+            visited = set()
+
+            while heap:
+                _, cur_x, cur_y, cur_direction = heapq.heappop(heap)
+
+                if (cur_x, cur_y, cur_direction) in visited:
+                    continue
+
+                if end.is_eq(cur_x, cur_y, cur_direction):
+                    record_path(start, end, parent, g_distance[(cur_x, cur_y, cur_direction)])
+                    return g_distance[(cur_x, cur_y, cur_direction)]
+
+                visited.add((cur_x, cur_y, cur_direction))
+                cur_distance = g_distance[(cur_x, cur_y, cur_direction)]
+
+                for next_x, next_y, new_direction in self.get_neighbors(cur_x, cur_y, cur_direction):
+                    if (next_x, next_y, new_direction) in visited:
+                        continue
+
+                    move_cost = Direction.rotation_cost(new_direction, cur_direction) * TURN_FACTOR + 1
+                    # new cost is calculated by the cost to reach current state + cost to move from
+                    # current state to new state + heuristic cost from new state to end state
+                    next_cost = cur_distance + move_cost + \
+                                self.compute_coord_distance(next_x, next_y, end.x, end.y)
+
+                    if (next_x, next_y) not in g_distance or \
+                            g_distance[(next_x, next_y, new_direction)] > cur_distance + move_cost:
+                        g_distance[(next_x, next_y, new_direction)] = cur_distance + move_cost
+                        parent[(next_x, next_y, new_direction)] = (cur_x, cur_y, cur_direction)
+
+                        heapq.heappush(heap, (next_cost, next_x, next_y, new_direction))
+
+            return -1
+
+        result = []
+        best_distance = 10000
+        for view_states in self.grid.get_possible_path_options():
+            full_path = [view_states[0]]
+            exist_path = True
+            d = 0
+            for i in range(len(view_states) - 1):
+                d += astar_search(view_states[i], view_states[i + 1])
+                if d == -1:
+                    exist_path = False
+                    break
+
+            if exist_path and best_distance > d:
+                result = full_path
+                best_distance = d
+
+        return result
 
 if __name__ == "__main__":
     pass
