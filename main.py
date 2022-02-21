@@ -1,7 +1,7 @@
 import time
 
 from consts import Direction
-from algo.algo import MazeSolver
+from algo.algo import MazeSolver, FastCarSolver
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from model import *
@@ -42,6 +42,35 @@ def path_finding():
         "error": None
     })
 
+@app.route('/fastest_car', methods=['POST'])
+def fastest_car():
+    content = request.json
+
+    size_x = content['size_x']
+    size_y = content['size_y']
+    robot_x = content['robot_x']
+    robot_y = content['robot_y']
+    goal_x = content['goal_x']
+    goal_y = content['goal_y']
+
+    solver = FastCarSolver(size_x, size_y, robot_x, robot_y, goal_x, goal_y)
+
+    print("Manual A*")
+    start = time.time()
+    optimal_path = solver.get_path()
+    print(time.time() - start)
+
+    path_results = []
+    for o in optimal_path:
+        path_results.append(o.get_dict())
+
+    return jsonify({
+        "data": {
+            'path': path_results,
+            'commands': command_generator(optimal_path)
+        },
+        "error": None
+    })
 
 @app.route('/image', methods=['POST'])
 def image_predict():
