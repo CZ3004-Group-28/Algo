@@ -135,6 +135,13 @@ def navigate():
     for o in optimal_path:
         path_results.append(o.get_dict())
 
+    # add additional DT20 command infront
+    # tells STM32 to move until 20cm is reached
+    commands.insert(0, 'DT20')
+
+    # add additional location to path (copied from 1st location)
+    path_results.insert(0, path_results[0])
+
     return jsonify({
         "data": {
             "path": path_results,
