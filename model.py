@@ -56,10 +56,14 @@ def predict_image(image,model):
         "X":        33,
         "Y":        34,
         "Z":        35,
-        "Up":       36,
-        "Down":     37,
-        "Right":    38,
-        "Left":     39,
+        "Up": 36,
+        "Down": 37,
+        "Right": 38,
+        "Left": 39,
+        "Up Arrow":       36,
+        "Down Arrow":     37,
+        "Right Arrow":    38,
+        "Left Arrow":     39,
         "Stop":     40
     }
     image_id = str(name_to_id[pred])

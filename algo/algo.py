@@ -130,55 +130,55 @@ class MazeSolver:
             else:  # consider 8 case
                 # north <-> east
                 if direction == Direction.NORTH and md == Direction.EAST:
-                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS, md))
-                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS*3, y + TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS*3, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS*3, y - TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS*3, y - TURN_RADIUS, md))
 
                 if direction == Direction.EAST and md == Direction.NORTH:
-                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS, md))
-                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS*3):
+                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS*3, md))
+                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS*3):
+                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS*3, md))
 
                 # east <-> south
                 if direction == Direction.EAST and md == Direction.SOUTH:
-                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS, md))
-                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS*3):
+                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS*3, md))
+                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS*3):
+                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS*3, md))
 
                 if direction == Direction.SOUTH and md == Direction.EAST:
-                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS, md))
-                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS*3, y - TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS*3, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS*3, y + TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS*3, y + TURN_RADIUS, md))
 
                 # south <-> west
                 if direction == Direction.SOUTH and md == Direction.WEST:
-                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS, md))
-                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS*3, y - TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS*3, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS*3, y + TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS*3, y + TURN_RADIUS, md))
 
                 if direction == Direction.WEST and md == Direction.SOUTH:
-                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS, md))
-                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS*3):
+                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS*3, md))
+                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS*3):
+                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS*3, md))
 
                 # west <-> north
                 if direction == Direction.WEST and md == Direction.NORTH:
-                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS, md))
-                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS*3):
+                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS*3, md))
+                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS*3):
+                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS*3, md))
 
                 if direction == Direction.NORTH and md == Direction.WEST:
-                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS, md))
-                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS*3, y + TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS*3, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS*3, y - TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS*3, y - TURN_RADIUS, md))
 
         return neighbors
 
@@ -286,55 +286,55 @@ class FastCarSolver:
             else:  # consider 8 case
                 # north <-> east
                 if direction == Direction.NORTH and md == Direction.EAST:
-                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS, md))
-                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS*3, y + TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS*3, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS*3, y - TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS*3, y - TURN_RADIUS, md))
 
                 if direction == Direction.EAST and md == Direction.NORTH:
-                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS, md))
-                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS*3):
+                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS*3, md))
+                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS*3):
+                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS*3, md))
 
                 # east <-> south
                 if direction == Direction.EAST and md == Direction.SOUTH:
-                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS, md))
-                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS*3):
+                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS*3, md))
+                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS*3):
+                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS*3, md))
 
                 if direction == Direction.SOUTH and md == Direction.EAST:
-                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS, md))
-                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS*3, y - TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS*3, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS*3, y + TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS*3, y + TURN_RADIUS, md))
 
                 # south <-> west
                 if direction == Direction.SOUTH and md == Direction.WEST:
-                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS, md))
-                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS*3, y - TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS*3, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS*3, y + TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS*3, y + TURN_RADIUS, md))
 
                 if direction == Direction.WEST and md == Direction.SOUTH:
-                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS, md))
-                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS*3):
+                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS*3, md))
+                    if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS*3):
+                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS*3, md))
 
                 # west <-> north
                 if direction == Direction.WEST and md == Direction.NORTH:
-                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS, md))
-                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS*3):
+                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS*3, md))
+                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS*3):
+                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS*3, md))
 
                 if direction == Direction.NORTH and md == Direction.WEST:
-                    if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS, md))
-                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS, md))
+                    if self.grid.reachable(x - TURN_RADIUS*3, y + TURN_RADIUS):
+                        neighbors.append((x - TURN_RADIUS*3, y + TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS*3, y - TURN_RADIUS):
+                        neighbors.append((x + TURN_RADIUS*3, y - TURN_RADIUS, md))
 
         return neighbors
 

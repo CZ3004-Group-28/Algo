@@ -141,7 +141,8 @@ def navigate():
 
     # add additional location to path (copied from 1st location)
     path_results.insert(0, path_results[0])
-
+    print(commands)
+    print(path_results)
     return jsonify({
         "data": {
             "path": path_results,

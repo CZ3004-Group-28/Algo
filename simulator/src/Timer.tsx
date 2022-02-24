@@ -8,7 +8,7 @@ type Props = {
 const Timer = forwardRef((props: Props, ref) => {
 	const [value, setValue] = useState<number>(100);
 	const timeRef = useRef<any>();
-	const valueHolder = useRef<number>(30);
+	const valueHolder = useRef<number>(1000);
 
 	useEffect(() => {
 		return () => {
@@ -18,7 +18,7 @@ const Timer = forwardRef((props: Props, ref) => {
 
 	useImperativeHandle(ref, () => ({
 		reset(){
-			valueHolder.current = 30;
+			valueHolder.current = 1000;
 			update();
 		}
 	}));
