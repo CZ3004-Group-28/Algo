@@ -84,7 +84,7 @@ class Obstacle(CellState):
         elif self.direction == Direction.EAST:
             if is_valid(self.x + EXPANDED_CELL * 2, self.y):
                 cells.append(CellState(self.x + EXPANDED_CELL * 2, self.y,
-                                       Direction.NORTH, self.obstacle_id))
+                                       Direction.WEST, self.obstacle_id))
 
             if is_valid(self.x + 1 + EXPANDED_CELL * 2, self.y):
                 cells.append(CellState(self.x + 1 + EXPANDED_CELL * 2, self.y,
@@ -177,7 +177,6 @@ class Grid:
         for ob in self.obstacles:
             view_states = [view_state for view_state in ob.get_view_state() if
                            self.reachable(view_state.x, view_state.y)]
-            assert (len(view_states) > 0)
             optimal_positions.append(view_states)
 
         return optimal_positions

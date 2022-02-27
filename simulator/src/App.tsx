@@ -405,10 +405,10 @@ function App() {
 			</Grid>
 			<Grid container direction='row' width={200} spacing={1} style={{marginLeft: 'auto', marginRight: 'auto'}}>
 				<Grid item xs={6} justifyContent='center'>
-					<Button variant='outlined' onClick={onReset} size="small" disabled={isComputing}>Reset</Button>
+					<Button variant='outlined' onClick={onReset} size="small">Reset</Button>
 				</Grid>
 				<Grid item xs={6}>
-					<Button variant='contained' size="small" disabled={obstacles.length === 0 || isComputing}
+					<Button variant='contained' size="small" disabled={obstacles.length === 0}
 							onClick={compute}>Compute</Button>
 				</Grid>
 			</Grid>

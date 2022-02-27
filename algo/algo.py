@@ -43,58 +43,81 @@ class MazeSolver:
     def compute_state_distance(start_state: CellState, end_state: CellState, level=1):
         return MazeSolver.compute_coord_distance(start_state.x, start_state.y, end_state.x, end_state.y, level)
 
+    @staticmethod
+    def get_visit_options(n):
+        s = []
+        l = bin(2 ** n - 1).count('1')
+
+        for i in range(2 ** n):
+            s.append(bin(i)[2:].zfill(l))
+
+        s.sort(key=lambda x: x.count('1'), reverse=True)
+        return s
+
     def get_optimal_order_dp(self) -> [CellState]:
-        # calculate optimal_cost table
-        items = [self.robot.get_start_state()]
-        # all possible positions to be able to view the obstacles
-        view_positions = self.grid.get_view_obstacle_positions()
         distance = 1e9
-
-        for view_position in view_positions:
-            items = items + view_position
-
-        self.path_cost_generator(items)
-
         optimal_path = []
-        combination = []
-        self.generate_combination(view_positions, 0, [], combination, [ITERATIONS])
 
-        for c in combination: # run the algo some times ->
-            visited_candidates = [0] # add the start state of the robot
+        # all possible positions to be able to view the obstacles
+        all_view_positions = self.grid.get_view_obstacle_positions()
 
-            cur_index = 1
-            for index, view_position in enumerate(view_positions):
-                visited_candidates.append(cur_index + c[index])
-                cur_index += len(view_position)
+        for op in self.get_visit_options(len(all_view_positions)):
+            # op is string of length view position formed by 1 and 0
+            # if index == 1 means the view_positions[index] is selected to visit, otherwise drop
+            # calculate optimal_cost table
+            items = [self.robot.get_start_state()]
+            cur_view_positions = []
+            print(op)
+            for idx in range(len(all_view_positions)):
+                if op[idx] == '1':
+                    items = items + all_view_positions[idx]
+                    cur_view_positions.append(all_view_positions[idx])
 
-            cost_np = np.zeros((len(visited_candidates), len(visited_candidates)))
+            self.path_cost_generator(items)
 
-            for s in range(len(visited_candidates) - 1):
-                for e in range(s + 1, len(visited_candidates)):
-                    u = items[visited_candidates[s]]
-                    v = items[visited_candidates[e]]
-                    if (u, v) in self.cost_table.keys():
-                        cost_np[s][e] = self.cost_table[(u, v)]
-                    else:
-                        cost_np[s][e] = 1e9
-                    cost_np[e][s] = cost_np[s][e]
-            cost_np[:, 0] = 0
-            _permutation, _distance = solve_tsp_dynamic_programming(cost_np)
-            if _distance >= distance:
-                continue
+            combination = []
+            self.generate_combination(cur_view_positions, 0, [], combination, [ITERATIONS])
 
-            optimal_path = [items[0]]
-            distance = _distance
+            for c in combination: # run the algo some times ->
+                visited_candidates = [0] # add the start state of the robot
 
-            for i in range(len(_permutation) - 1):
-                from_item = items[visited_candidates[_permutation[i]]]
-                to_item = items[visited_candidates[_permutation[i + 1]]]
+                cur_index = 1
+                for index, view_position in enumerate(cur_view_positions):
+                    visited_candidates.append(cur_index + c[index])
+                    cur_index += len(view_position)
 
-                cur_path = self.path_table[(from_item, to_item)]
-                for j in range(1, len(cur_path)):
-                    optimal_path.append(CellState(cur_path[j][0], cur_path[j][1], cur_path[j][2]))
+                cost_np = np.zeros((len(visited_candidates), len(visited_candidates)))
 
-                optimal_path[-1].set_screenshot(to_item.screenshot_id)
+                for s in range(len(visited_candidates) - 1):
+                    for e in range(s + 1, len(visited_candidates)):
+                        u = items[visited_candidates[s]]
+                        v = items[visited_candidates[e]]
+                        if (u, v) in self.cost_table.keys():
+                            cost_np[s][e] = self.cost_table[(u, v)]
+                        else:
+                            cost_np[s][e] = 1e9
+                        cost_np[e][s] = cost_np[s][e]
+                cost_np[:, 0] = 0
+                _permutation, _distance = solve_tsp_dynamic_programming(cost_np)
+                if _distance >= distance:
+                    continue
+
+                optimal_path = [items[0]]
+                distance = _distance
+
+                for i in range(len(_permutation) - 1):
+                    from_item = items[visited_candidates[_permutation[i]]]
+                    to_item = items[visited_candidates[_permutation[i + 1]]]
+
+                    cur_path = self.path_table[(from_item, to_item)]
+                    for j in range(1, len(cur_path)):
+                        optimal_path.append(CellState(cur_path[j][0], cur_path[j][1], cur_path[j][2]))
+
+                    optimal_path[-1].set_screenshot(to_item.screenshot_id)
+
+            if optimal_path:
+                # if found optimal path, return
+                break
 
         return optimal_path, distance
 
