@@ -280,7 +280,7 @@ function App() {
 	const onChangeY = (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
 		if (Number.isInteger(Number(event.target.value))) {
 			const nb = Number(event.target.value);
-			if (0 < nb && nb < 19) {
+			if (0 <= nb && nb <= 19) {
 				setObYInput(nb);
 				return;
 			}

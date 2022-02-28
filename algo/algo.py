@@ -68,10 +68,13 @@ class MazeSolver:
             items = [self.robot.get_start_state()]
             cur_view_positions = []
             print(op)
+            print("List of obstacle visited: \n")
+
             for idx in range(len(all_view_positions)):
                 if op[idx] == '1':
                     items = items + all_view_positions[idx]
                     cur_view_positions.append(all_view_positions[idx])
+                    print("obstacle: {}\n".format(self.grid.obstacles[idx]))
 
             self.path_cost_generator(items)
 
