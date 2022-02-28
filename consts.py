@@ -87,3 +87,5 @@ HEIGHT = 20
 
 ITERATIONS = 2000
 TURN_RADIUS = 1
+
+SAFE_COST = 3 # the cost for the turn in case there is a chance that the robot is touch some obstacle

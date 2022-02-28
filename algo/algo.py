@@ -3,7 +3,7 @@ import math
 import numpy as np
 from entities.Robot import Robot
 from entities.Entity import Obstacle, CellState, Grid, GridFastestCar
-from consts import Direction, MOVE_DIRECTION, TURN_FACTOR, ITERATIONS, TURN_RADIUS
+from consts import Direction, MOVE_DIRECTION, TURN_FACTOR, ITERATIONS, TURN_RADIUS, SAFE_COST
 from python_tsp.exact import solve_tsp_dynamic_programming
 
 
@@ -141,6 +141,12 @@ class MazeSolver:
             MazeSolver.generate_combination(view_positions, index + 1, current, result, iteration_left)
             current.pop()
 
+    def get_safe_cost(self, x, y):
+        for ob in self.grid.obstacles:
+            if abs(ob.x - x) == 2 and abs(ob.y - y) == 2:
+                return SAFE_COST
+        return 0
+
     def get_neighbors(self, x, y, direction):  # TODO: see the behavior of the robot and adjust...
         """
         Return a list of tuples with format:
@@ -149,64 +155,90 @@ class MazeSolver:
         neighbors = []
         # assume that after follow this direction, the car direction is EXACTLY md
         for dx, dy, md in MOVE_DIRECTION:
+            safe_cost = 0
             if md == direction:  # if the new direction == md
                 if self.grid.reachable(x + dx, y + dy):  # go forward;
-                    neighbors.append((x + dx, y + dy, md))
+                    neighbors.append((x + dx, y + dy, md, safe_cost))
+
                 if self.grid.reachable(x - dx, y - dy):  # go back;
-                    neighbors.append((x - dx, y - dy, md))
+                    neighbors.append((x - dx, y - dy, md, safe_cost))
 
             else:  # consider 8 case
                 # north <-> east
                 if direction == Direction.NORTH and md == Direction.EAST:
                     if self.grid.reachable(x + TURN_RADIUS*3, y + TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS*3, y + TURN_RADIUS, md))
+                        safe_cost = self.get_safe_cost(x + TURN_RADIUS*3, y + TURN_RADIUS)
+                        neighbors.append((x + TURN_RADIUS*3, y + TURN_RADIUS, md, safe_cost))
+
                     if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS*3):
-                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS*3, md))
+                        safe_cost = self.get_safe_cost(x - TURN_RADIUS, y - TURN_RADIUS*3)
+                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS*3, md, safe_cost))
 
                 if direction == Direction.EAST and md == Direction.NORTH:
                     if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS*3):
-                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS*3, md))
+                        safe_cost = self.get_safe_cost(x + TURN_RADIUS, y + TURN_RADIUS*3)
+                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS*3, md, safe_cost))
+
                     if self.grid.reachable(x - TURN_RADIUS*3, y - TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS*3, y - TURN_RADIUS, md))
+                        safe_cost = self.get_safe_cost(x - TURN_RADIUS*3, y - TURN_RADIUS)
+                        neighbors.append((x - TURN_RADIUS*3, y - TURN_RADIUS, md, safe_cost))
 
                 # east <-> south
                 if direction == Direction.EAST and md == Direction.SOUTH:
                     if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS*3):
-                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS*3, md))
+                        safe_cost = self.get_safe_cost(x + TURN_RADIUS, y - TURN_RADIUS*3)
+                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS*3, md, safe_cost))
+
                     if self.grid.reachable(x - TURN_RADIUS*3, y + TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS*3, y + TURN_RADIUS, md))
+                        safe_cost = self.get_safe_cost(x - TURN_RADIUS*3, y + TURN_RADIUS)
+                        neighbors.append((x - TURN_RADIUS*3, y + TURN_RADIUS, md, safe_cost))
 
                 if direction == Direction.SOUTH and md == Direction.EAST:
                     if self.grid.reachable(x + TURN_RADIUS*3, y - TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS*3, y - TURN_RADIUS, md))
+                        safe_cost = self.get_safe_cost(x + TURN_RADIUS*3, y - TURN_RADIUS)
+                        neighbors.append((x + TURN_RADIUS*3, y - TURN_RADIUS, md, safe_cost))
+
                     if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS*3):
-                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS*3, md))
+                        safe_cost = self.get_safe_cost(x - TURN_RADIUS, y + TURN_RADIUS*3)
+                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS*3, md, safe_cost))
 
                 # south <-> west
                 if direction == Direction.SOUTH and md == Direction.WEST:
                     if self.grid.reachable(x - TURN_RADIUS*3, y - TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS*3, y - TURN_RADIUS, md))
+                        safe_cost = self.get_safe_cost(x - TURN_RADIUS*3, y - TURN_RADIUS)
+                        neighbors.append((x - TURN_RADIUS*3, y - TURN_RADIUS, md, safe_cost))
+
                     if self.grid.reachable(x + TURN_RADIUS, y + TURN_RADIUS*3):
-                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS*3, md))
+                        safe_cost = self.get_safe_cost(x + TURN_RADIUS, y + TURN_RADIUS*3)
+                        neighbors.append((x + TURN_RADIUS, y + TURN_RADIUS*3, md, safe_cost))
 
                 if direction == Direction.WEST and md == Direction.SOUTH:
                     if self.grid.reachable(x - TURN_RADIUS, y - TURN_RADIUS*3):
-                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS*3, md))
+                        safe_cost = self.get_safe_cost(x - TURN_RADIUS, y - TURN_RADIUS*3)
+                        neighbors.append((x - TURN_RADIUS, y - TURN_RADIUS*3, md, safe_cost))
+
                     if self.grid.reachable(x + TURN_RADIUS*3, y + TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS*3, y + TURN_RADIUS, md))
+                        safe_cost = self.get_safe_cost(x + TURN_RADIUS*3, y + TURN_RADIUS)
+                        neighbors.append((x + TURN_RADIUS*3, y + TURN_RADIUS, md, safe_cost))
 
                 # west <-> north
                 if direction == Direction.WEST and md == Direction.NORTH:
                     if self.grid.reachable(x - TURN_RADIUS, y + TURN_RADIUS*3):
-                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS*3, md))
+                        safe_cost = self.get_safe_cost(x - TURN_RADIUS, y + TURN_RADIUS*3)
+                        neighbors.append((x - TURN_RADIUS, y + TURN_RADIUS*3, md, safe_cost))
+
                     if self.grid.reachable(x + TURN_RADIUS*3, y - TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS*3, y - TURN_RADIUS, md))
+                        safe_cost = self.get_safe_cost(x + TURN_RADIUS*3, y - TURN_RADIUS)
+                        neighbors.append((x + TURN_RADIUS*3, y - TURN_RADIUS, md, safe_cost))
 
                 if direction == Direction.NORTH and md == Direction.WEST:
-                    if self.grid.reachable(x + TURN_RADIUS, y - 3 * TURN_RADIUS):
-                        neighbors.append((x + TURN_RADIUS, y - 3 * TURN_RADIUS, md))
+                    if self.grid.reachable(x + TURN_RADIUS, y - TURN_RADIUS*3):
+                        safe_cost = self.get_safe_cost(x + TURN_RADIUS, y - TURN_RADIUS*3)
+                        neighbors.append((x + TURN_RADIUS, y - TURN_RADIUS*3, md, safe_cost))
+
                     if self.grid.reachable(x - TURN_RADIUS*3, y + TURN_RADIUS):
-                        neighbors.append((x - TURN_RADIUS*3, y + TURN_RADIUS, md))
+                        safe_cost = self.get_safe_cost(x - TURN_RADIUS*3, y + TURN_RADIUS)
+                        neighbors.append((x - TURN_RADIUS*3, y + TURN_RADIUS, md, safe_cost))
 
         return neighbors
 
@@ -256,14 +288,18 @@ class MazeSolver:
                 visited.add((cur_x, cur_y, cur_direction))
                 cur_distance = g_distance[(cur_x, cur_y, cur_direction)]
 
-                for next_x, next_y, new_direction in self.get_neighbors(cur_x, cur_y, cur_direction):
+                for next_x, next_y, new_direction, safe_cost in self.get_neighbors(cur_x, cur_y, cur_direction):
                     if (next_x, next_y, new_direction) in visited:
                         continue
 
                     move_cost = Direction.rotation_cost(new_direction, cur_direction) * TURN_FACTOR + 1
+
+                    # the cost to check if any obstacles that considered too near the robot; if it
+                    # safe_cost =
+
                     # new cost is calculated by the cost to reach current state + cost to move from
                     # current state to new state + heuristic cost from new state to end state
-                    next_cost = cur_distance + move_cost + \
+                    next_cost = cur_distance + move_cost + safe_cost + \
                                 self.compute_coord_distance(next_x, next_y, end.x, end.y)
 
                     if (next_x, next_y, new_direction) not in g_distance or \
@@ -300,7 +336,7 @@ class FastCarSolver:
     def get_neighbors(self, x, y, direction):  # TODO: see the behavior of the robot and adjust...
         """
         Return a list of tuples with format:
-        newX, newY, new_direction
+        newX, newY, new_direction, safe_cost
         """
         neighbors = []
         # assume that after follow this direction, the car direction is EXACTLY md
@@ -419,14 +455,15 @@ class FastCarSolver:
                 visited.add((cur_x, cur_y, cur_direction))
                 cur_distance = g_distance[(cur_x, cur_y, cur_direction)]
 
-                for next_x, next_y, new_direction in self.get_neighbors(cur_x, cur_y, cur_direction):
+                for next_x, next_y, new_direction, safe_cost in self.get_neighbors(cur_x, cur_y, cur_direction):
                     if (next_x, next_y, new_direction) in visited:
                         continue
 
                     move_cost = Direction.rotation_cost(new_direction, cur_direction) * TURN_FACTOR + 1
+
                     # new cost is calculated by the cost to reach current state + cost to move from
                     # current state to new state + heuristic cost from new state to end state
-                    next_cost = cur_distance + move_cost + \
+                    next_cost = cur_distance + move_cost + safe_cost + \
                                 self.compute_coord_distance(next_x, next_y, end.x, end.y)
 
                     if (next_x, next_y, new_direction) not in g_distance or \

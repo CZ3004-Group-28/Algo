@@ -16,7 +16,7 @@ class CellState:
         return self.x == x and self.y == y and self.direction == direction
 
     def __repr__(self):
-        return "x: {}, y: {}, d: {}".format(self.x, self.y, self.direction)
+        return "x: {}, y: {}, d: {}, screenshot: {}".format(self.x, self.y, self.direction, self.screenshot_id)
 
     def set_screenshot(self, screenshot_id):
         self.screenshot_id = screenshot_id
@@ -153,6 +153,8 @@ class Grid:
             return False
 
         for ob in self.obstacles:  # handle the virtual expansion of the obstacles
+            if abs(ob.x - x) + abs(ob.y - y) >= 4:
+                continue
             if max(abs(ob.x - x), abs(ob.y - y)) < EXPANDED_CELL * 2 + 1:
                 return False
 
