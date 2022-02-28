@@ -60,6 +60,8 @@ class MazeSolver:
 
         # all possible positions to be able to view the obstacles
         all_view_positions = self.grid.get_view_obstacle_positions()
+        print("All view position: ")
+        print(all_view_positions)
 
         for op in self.get_visit_options(len(all_view_positions)):
             # op is string of length view position formed by 1 and 0
