@@ -268,7 +268,7 @@ function App() {
 	const onChangeX = (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
 		if (Number.isInteger(Number(event.target.value))) {
 			const nb = Number(event.target.value);
-			if (0 < nb && nb < 20) {
+			if (0 <= nb && nb < 20) {
 				setObXInput(nb);
 				return;
 			}
@@ -325,7 +325,15 @@ function App() {
 		QueryAPI.query(obstacles, (data: any, err: any) => {
 			if (data) {
 				setPath(data.data.path as RobotCell[]);
-				setCommands(data.data.commands);
+				const commands = [];
+
+                for(let x of data.data.commands) {
+                 if (x.startsWith('SNAP')) {
+                  continue;
+                 }
+                 commands.push(x)
+                }
+                setCommands(commands);
 			}
 
 			setIsComputing(false);

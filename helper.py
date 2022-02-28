@@ -85,4 +85,22 @@ def command_generator(states):
             commands.append("SNAP{}".format(states[i].screenshot_id))
 
     commands.append("FIN") # issue the stop signal
-    return commands
+
+    compressed_commands = [commands[0]]
+
+    for i in range(1, len(commands)):
+        if commands[i].startswith("BW") and compressed_commands[-1].startswith("BW"):
+            steps = int(compressed_commands[-1][2:])
+            if steps != 90:
+                compressed_commands[-1] = "BW{}".format(steps + 10)
+                continue
+
+        elif commands[i].startswith("FW") and compressed_commands[-1].startswith("FW"):
+            steps = int(compressed_commands[-1][2:])
+            if steps != 90:
+                compressed_commands[-1] = "FW{}".format(steps + 10)
+                continue
+
+        compressed_commands.append(commands[i])
+
+    return compressed_commands
