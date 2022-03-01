@@ -60,8 +60,8 @@ class MazeSolver:
 
         # all possible positions to be able to view the obstacles
         all_view_positions = self.grid.get_view_obstacle_positions()
-        print("All view position: ")
-        print(all_view_positions)
+        # print("All view position: ")
+        # print(all_view_positions)
 
         for op in self.get_visit_options(len(all_view_positions)):
             # op is string of length view position formed by 1 and 0
@@ -158,9 +158,11 @@ class MazeSolver:
             safe_cost = 0
             if md == direction:  # if the new direction == md
                 if self.grid.reachable(x + dx, y + dy):  # go forward;
+                    safe_cost = self.get_safe_cost(x + dx, y + dy)
                     neighbors.append((x + dx, y + dy, md, safe_cost))
 
                 if self.grid.reachable(x - dx, y - dy):  # go back;
+                    safe_cost = self.get_safe_cost(x - dx, y - dy)
                     neighbors.append((x - dx, y - dy, md, safe_cost))
 
             else:  # consider 8 case
@@ -292,14 +294,14 @@ class MazeSolver:
                     if (next_x, next_y, new_direction) in visited:
                         continue
 
-                    move_cost = Direction.rotation_cost(new_direction, cur_direction) * TURN_FACTOR + 1
+                    move_cost = Direction.rotation_cost(new_direction, cur_direction) * TURN_FACTOR + 1 + safe_cost
 
                     # the cost to check if any obstacles that considered too near the robot; if it
                     # safe_cost =
 
                     # new cost is calculated by the cost to reach current state + cost to move from
                     # current state to new state + heuristic cost from new state to end state
-                    next_cost = cur_distance + move_cost + safe_cost + \
+                    next_cost = cur_distance + move_cost + \
                                 self.compute_coord_distance(next_x, next_y, end.x, end.y)
 
                     if (next_x, next_y, new_direction) not in g_distance or \
@@ -456,14 +458,15 @@ class FastCarSolver:
                 cur_distance = g_distance[(cur_x, cur_y, cur_direction)]
 
                 for next_x, next_y, new_direction, safe_cost in self.get_neighbors(cur_x, cur_y, cur_direction):
+
                     if (next_x, next_y, new_direction) in visited:
                         continue
 
-                    move_cost = Direction.rotation_cost(new_direction, cur_direction) * TURN_FACTOR + 1
+                    move_cost = Direction.rotation_cost(new_direction, cur_direction) * TURN_FACTOR + 1 + safe_cost
 
                     # new cost is calculated by the cost to reach current state + cost to move from
                     # current state to new state + heuristic cost from new state to end state
-                    next_cost = cur_distance + move_cost + safe_cost + \
+                    next_cost = cur_distance + move_cost + \
                                 self.compute_coord_distance(next_x, next_y, end.x, end.y)
 
                     if (next_x, next_y, new_direction) not in g_distance or \
