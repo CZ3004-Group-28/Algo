@@ -17,17 +17,16 @@ def predict_image(image,model):
     results.save('runs')
     df_results = results.pandas().xyxy[0]
     df_results['bboxHt'] = df_results['ymax']-df_results['ymin']
-    df_results = df_results.sort_values('bboxHt', ascending=True)
-    # df_results = results.pandas().xyxy[0].sort_values('confidence', ascending=True) #Sort by confidence
+    df_results = df_results.sort_values('bboxHt', ascending=True)  # Label with largest bbox height will be last
     pred_list = df_results['name'].to_numpy()
     pred = 'NA'
-    for i in pred_list:
-        pred = i
-    # if pred_list.size != 0:
-    #     pred = 'Bullseye'
-    #     for i in pred_list:
-    #         if i != 'Bullseye':
-    #             pred = i
+    # This if statement will ignore Bullseye unless they are the only image detected and select the last label in
+    # the list (the last label will be the one with the largest bbox height)
+    if pred_list.size != 0:
+        pred = 'Bullseye'
+        for i in pred_list:
+            if i != 'Bullseye':
+                pred = i
     name_to_id = {
         "NA":       'NA',
         "Bullseye": 10,
@@ -86,10 +85,10 @@ def stitch_image():
         x_offset += im.size[0]
     stitchedImg.save(stitchedPath)
 
-## Load
+# # Load
 # model = load_model()
-
-## Predict
+#
+# # Predict
 # image = '2_1.jpg'
 # print(predict_image(image, model))
 
