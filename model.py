@@ -76,10 +76,11 @@ def predict_image(image, model):
 # This function can be called by itself
 def stitch_image():
     imgFolder = 'runs'
-    stitchedPath = os.path.join(imgFolder, f'stitched-{time.time()}.jpg')
+    stitchedPath = os.path.join(imgFolder, f'stitched-{int(time.time())}.jpeg')
 
-    # find all files that ends with ".jpeg" (this won't match the stitched images as we name them ".jpg")
-    imgPaths = glob.glob("*.jpeg")
+    # find all files that ends with ".jpg" (this won't match the stitched images as we name them ".jpeg")
+    imgPaths = glob.glob(os.path.join(imgFolder, "*.jpg"))
+    print(imgPaths)
     images = [Image.open(x) for x in imgPaths]
     width, height = zip(*(i.size for i in images))
     total_width = sum(width)
@@ -95,4 +96,6 @@ def stitch_image():
 
     # move original images to "originals" subdirectory
     for img in imgPaths:
-        shutil.move(img, os.path.join("originals", img))
+        shutil.move(img, os.path.join("runs", "originals", os.path.basename(img)))
+
+    return stitchedImg

@@ -77,11 +77,11 @@ def image_predict():
     # save the image file to the uploads folder
     file = request.files['file']
     filename = file.filename
+    print(filename)
     file.save(os.path.join('uploads', filename))
-
     # perform image recognition
     # filename format: "<timestamp>_<obstacle_id>.jpeg"
-    obstacle_id = file.filename.split("_")[1]
+    obstacle_id = file.filename.split("_")[1].strip(".jpg")
     image_id = predict_image(filename, model)
 
     result = {
@@ -153,7 +153,8 @@ def navigate():
 
 @app.route('/stitch', methods=['GET'])
 def stitch():
-    stitch_image()
+    img = stitch_image()
+    img.show()
     return jsonify({"result": "ok"})
 
 
