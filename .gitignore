@@ -1,5 +1,9 @@
 runs/*
+!runs/originals/
+runs/originals/*
+
 uploads/*
+.DS_STORE
 !.gitkeep
 venv/
 networkx.csv
