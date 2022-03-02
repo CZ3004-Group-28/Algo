@@ -29,15 +29,27 @@ def path_finding():
     print(time.time() - start)
     print(distance)
 
-    path_results = []
-    for o in optimal_path:
-        path_results.append(o.get_dict())
+    commands = command_generator(optimal_path)
+    path_results = [optimal_path[0].get_dict()]
+    i = 0
+    for command in commands:
+        if command.startswith("SNAP"):
+            continue
+        if command.startswith("FIN"):
+            continue
+        elif command.startswith("FW"):
+            i += int(command[2:]) // 10
+        elif command.startswith("BW"):
+            i += int(command[2:]) // 10
+        else:
+            i += 1
+        path_results.append(optimal_path[i].get_dict())
 
     return jsonify({
         "data": {
             'distance': distance,
             'path': path_results,
-            'commands': command_generator(optimal_path)
+            'commands': commands
         },
         "error": None
     })
