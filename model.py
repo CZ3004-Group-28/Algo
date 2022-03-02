@@ -1,4 +1,7 @@
 import os
+import shutil
+import time
+import glob
 import torch
 from PIL import Image
 from imutils import paths
@@ -73,23 +76,23 @@ def predict_image(image, model):
 # This function can be called by itself
 def stitch_image():
     imgFolder = 'runs'
-    stitchedPath = os.path.join(imgFolder, 'stitched.jpg')
-    imgPath = list(paths.list_images(imgFolder))
-    images = [Image.open(x) for x in imgPath]
+    stitchedPath = os.path.join(imgFolder, f'stitched-{time.time()}.jpg')
+
+    # find all files that ends with ".jpeg" (this won't match the stitched images as we name them ".jpg")
+    imgPaths = glob.glob("*.jpeg")
+    images = [Image.open(x) for x in imgPaths]
     width, height = zip(*(i.size for i in images))
     total_width = sum(width)
     max_height = max(height)
     stitchedImg = Image.new('RGB', (total_width, max_height))
     x_offset = 0
+
+    # stitch
     for im in images:
-        stitchedImg.paste(im, (x_offset,0))
+        stitchedImg.paste(im, (x_offset, 0))
         x_offset += im.size[0]
     stitchedImg.save(stitchedPath)
 
-# # Load
-# model = load_model()
-#
-# # Predict
-# image = '2_1.jpg'
-# print(predict_image(image, model))
-
+    # move original images to "originals" subdirectory
+    for img in imgPaths:
+        shutil.move(img, os.path.join("originals", img))
