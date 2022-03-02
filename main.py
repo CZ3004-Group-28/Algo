@@ -80,8 +80,8 @@ def image_predict():
     file.save(os.path.join('uploads', filename))
 
     # perform image recognition
-    # filename format: "<obstacle_id>_<timestamp>.jpeg"
-    obstacle_id = file.filename.split("_")[0]  
+    # filename format: "<timestamp>_<obstacle_id>.jpeg"
+    obstacle_id = file.filename.split("_")[1]
     image_id = predict_image(filename, model)
 
     result = {
@@ -155,6 +155,7 @@ def navigate():
 def stitch():
     stitch_image()
     return jsonify({"result": "ok"})
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
