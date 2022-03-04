@@ -9,6 +9,7 @@ from python_tsp.exact import solve_tsp_dynamic_programming
 turn_wrt_modes = [[3 * TURN_RADIUS, TURN_RADIUS],
                   [4 * TURN_RADIUS, 2 * TURN_RADIUS]]
 
+
 class MazeSolver:
     def __init__(
             self,
@@ -162,7 +163,6 @@ class MazeSolver:
         neighbors = []
         # assume that after follow this direction, the car direction is EXACTLY md
         for dx, dy, md in MOVE_DIRECTION:
-            safe_cost = 0
             if md == direction:  # if the new direction == md
                 if self.grid.reachable(x + dx, y + dy):  # go forward;
                     safe_cost = self.get_safe_cost(x + dx, y + dy)
@@ -178,76 +178,108 @@ class MazeSolver:
                 # north <-> east
                 if direction == Direction.NORTH and md == Direction.EAST:
                     if self.grid.reachable(x + bigger_change, y + smaller_change):
+                        if self.mode == 1 and not self.grid.reachable(x + bigger_change // 2, y + smaller_change // 2):
+                            continue
                         safe_cost = self.get_safe_cost(x + bigger_change, y + smaller_change)
                         neighbors.append((x + bigger_change, y + smaller_change, md, safe_cost))
 
                     if self.grid.reachable(x - smaller_change, y - bigger_change):
+                        if self.mode == 1 and not self.grid.reachable(x - smaller_change // 2, y - bigger_change // 2):
+                            continue
                         safe_cost = self.get_safe_cost(x - smaller_change, y - bigger_change)
                         neighbors.append((x - smaller_change, y - bigger_change, md, safe_cost))
 
                 if direction == Direction.EAST and md == Direction.NORTH:
                     if self.grid.reachable(x + smaller_change, y + bigger_change):
+                        if self.mode == 1 and not self.grid.reachable(x + smaller_change // 2, y + bigger_change // 2):
+                            continue
                         safe_cost = self.get_safe_cost(x + smaller_change, y + bigger_change)
                         neighbors.append((x + smaller_change, y + bigger_change, md, safe_cost))
 
                     if self.grid.reachable(x - bigger_change, y - smaller_change):
+                        if self.mode == 1 and not self.grid.reachable(x - bigger_change // 2, y - smaller_change // 2):
+                            continue
                         safe_cost = self.get_safe_cost(x - bigger_change, y - smaller_change)
                         neighbors.append((x - bigger_change, y - smaller_change, md, safe_cost))
 
                 # east <-> south
                 if direction == Direction.EAST and md == Direction.SOUTH:
                     if self.grid.reachable(x + smaller_change, y - bigger_change):
+                        if self.mode == 1 and not self.grid.reachable(x + smaller_change // 2, y - bigger_change // 2):
+                            continue
                         safe_cost = self.get_safe_cost(x + smaller_change, y - bigger_change)
                         neighbors.append((x + smaller_change, y - bigger_change, md, safe_cost))
 
                     if self.grid.reachable(x - bigger_change, y + smaller_change):
+                        if self.mode == 1 and not self.grid.reachable(x - bigger_change // 2, y + smaller_change // 2):
+                            continue
                         safe_cost = self.get_safe_cost(x - bigger_change, y + smaller_change)
                         neighbors.append((x - bigger_change, y + smaller_change, md, safe_cost))
 
                 if direction == Direction.SOUTH and md == Direction.EAST:
                     if self.grid.reachable(x + bigger_change, y - smaller_change):
+                        if self.mode == 1 and not self.grid.reachable(x + bigger_change // 2, y - smaller_change // 2):
+                            continue
                         safe_cost = self.get_safe_cost(x + bigger_change, y - smaller_change)
                         neighbors.append((x + bigger_change, y - smaller_change, md, safe_cost))
 
                     if self.grid.reachable(x - smaller_change, y + bigger_change):
+                        if self.mode == 1 and not self.grid.reachable(x - smaller_change // 2, y + bigger_change // 2):
+                            continue
                         safe_cost = self.get_safe_cost(x - smaller_change, y + bigger_change)
                         neighbors.append((x - smaller_change, y + bigger_change, md, safe_cost))
 
                 # south <-> west
                 if direction == Direction.SOUTH and md == Direction.WEST:
                     if self.grid.reachable(x - bigger_change, y - smaller_change):
+                        if self.mode == 1 and not self.grid.reachable(x - bigger_change // 2, y - smaller_change // 2):
+                            continue
                         safe_cost = self.get_safe_cost(x - bigger_change, y - smaller_change)
                         neighbors.append((x - bigger_change, y - smaller_change, md, safe_cost))
 
                     if self.grid.reachable(x + smaller_change, y + bigger_change):
+                        if self.mode == 1 and not self.grid.reachable(x + smaller_change // 2, y + bigger_change // 2):
+                            continue
                         safe_cost = self.get_safe_cost(x + smaller_change, y + bigger_change)
                         neighbors.append((x + smaller_change, y + bigger_change, md, safe_cost))
 
                 if direction == Direction.WEST and md == Direction.SOUTH:
                     if self.grid.reachable(x - smaller_change, y - bigger_change):
+                        if self.mode == 1 and not self.grid.reachable(x - smaller_change // 2, y - bigger_change // 2):
+                            continue
                         safe_cost = self.get_safe_cost(x - smaller_change, y - bigger_change)
                         neighbors.append((x - smaller_change, y - bigger_change, md, safe_cost))
 
                     if self.grid.reachable(x + bigger_change, y + smaller_change):
+                        if self.mode == 1 and not self.grid.reachable(x + bigger_change // 2, y + smaller_change // 2):
+                            continue
                         safe_cost = self.get_safe_cost(x + bigger_change, y + smaller_change)
                         neighbors.append((x + bigger_change, y + smaller_change, md, safe_cost))
 
                 # west <-> north
                 if direction == Direction.WEST and md == Direction.NORTH:
                     if self.grid.reachable(x - smaller_change, y + bigger_change):
+                        if self.mode == 1 and not self.grid.reachable(x - smaller_change // 2, y + bigger_change // 2):
+                            continue
                         safe_cost = self.get_safe_cost(x - smaller_change, y + bigger_change)
                         neighbors.append((x - smaller_change, y + bigger_change, md, safe_cost))
 
                     if self.grid.reachable(x + bigger_change, y - smaller_change):
+                        if self.mode == 1 and not self.grid.reachable(x + bigger_change // 2, y - smaller_change // 2):
+                            continue
                         safe_cost = self.get_safe_cost(x + bigger_change, y - smaller_change)
                         neighbors.append((x + bigger_change, y - smaller_change, md, safe_cost))
 
                 if direction == Direction.NORTH and md == Direction.WEST:
                     if self.grid.reachable(x + smaller_change, y - bigger_change):
+                        if self.mode == 1 and not self.grid.reachable(x + smaller_change // 2, y - bigger_change // 2):
+                            continue
                         safe_cost = self.get_safe_cost(x + smaller_change, y - bigger_change)
                         neighbors.append((x + smaller_change, y - bigger_change, md, safe_cost))
 
                     if self.grid.reachable(x - bigger_change, y + smaller_change):
+                        if self.mode == 1 and not self.grid.reachable(x - bigger_change // 2, y + smaller_change // 2):
+                            continue
                         safe_cost = self.get_safe_cost(x - bigger_change, y + smaller_change)
                         neighbors.append((x - bigger_change, y + smaller_change, md, safe_cost))
 

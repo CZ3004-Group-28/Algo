@@ -18,7 +18,7 @@ def path_finding():
     content = request.json
 
     obstacles = content['obstacles']
-    maze_solver = MazeSolver(20, 20, 1, 1, Direction.NORTH, mode=0)
+    maze_solver = MazeSolver(20, 20, 1, 1, Direction.NORTH, mode=content['mode'])
 
     for ob in obstacles:
         maze_solver.add_obstacle(ob['x'], ob['y'], ob['d'], ob['id'])

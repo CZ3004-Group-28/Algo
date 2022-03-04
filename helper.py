@@ -9,6 +9,7 @@ def command_generator(states):
     commands = []
 
     for i in range(1, len(states)):
+        steps = 20
         if states[i].direction == states[i - 1].direction:
             if (states[i].x > states[i - 1].x and states[i].direction == Direction.EAST) or (
                     states[i].y > states[i - 1].y and states[i].direction == Direction.NORTH):
@@ -21,61 +22,70 @@ def command_generator(states):
 
             else:
                 commands.append("BW10")
-        elif states[i - 1].direction == Direction.NORTH:
+            continue
+        else:
+            if abs(states[i].x - states[i-1].x) in [2, 4]:
+                steps = 30
+        # assume there are 4 turning command: FR, FL, BL, BR (the turn command will turn the car 90 degree)
+        # FR20 | FR30: Forward Right;
+        # FL20 | FL30: Forward Left;
+        # BR20 | BR30: Backward Right;
+        # BL20 | BL30: Backward Left;
+        if states[i - 1].direction == Direction.NORTH:
             if states[i].direction == Direction.EAST:
-                # assume there are 4 turning command: FR, FL, BL, BR (the turn command will turn the car 90 degree)
-                # FR00: Forward Right;
-                # FL00: Forward Left;
-                # BR00: Backward Right;
-                # BL00: Backward Left;
                 if states[i].y > states[i - 1].y:
-                    commands.append("FR00")
+                    commands.append("FR{}".format(steps))
                 else:
-                    commands.append("BL00")
+                    commands.append("BL{}".format(steps))
+
             elif states[i].direction == Direction.WEST:
                 if states[i].y > states[i - 1].y:
-                    commands.append("FL00")
+                    commands.append("FL{}".format(steps))
                 else:
-                    commands.append("BR00")
+                    commands.append("BR{}".format(steps))
             else:
                 raise Exception("Invalid turing direction")
+
         elif states[i - 1].direction == Direction.EAST:
             if states[i].direction == Direction.NORTH:
                 if states[i].y > states[i - 1].y:
-                    commands.append("FL00")
+                    commands.append("FL{}".format(steps))
                 else:
-                    commands.append("BR00")
+                    commands.append("BR{}".format(steps))
+
             elif states[i].direction == Direction.SOUTH:
                 if states[i].y > states[i - 1].y:
-                    commands.append("BL00")
+                    commands.append("BL{}".format(steps))
                 else:
-                    commands.append("FR00")
+                    commands.append("FR{}".format(steps))
             else:
                 raise Exception("Invalid turing direction")
+
         elif states[i - 1].direction == Direction.SOUTH:
             if states[i].direction == Direction.EAST:
                 if states[i].y > states[i - 1].y:
-                    commands.append("BR00")
+                    commands.append("BR{}".format(steps))
                 else:
-                    commands.append("FL00")
+                    commands.append("FL{}".format(steps))
             elif states[i].direction == Direction.WEST:
                 if states[i].y > states[i - 1].y:
-                    commands.append("BL00")
+                    commands.append("BL{}".format(steps))
                 else:
-                    commands.append("FR00")
+                    commands.append("FR{}".format(steps))
             else:
                 raise Exception("Invalid turing direction")
+
         elif states[i - 1].direction == Direction.WEST:
             if states[i].direction == Direction.NORTH:
                 if states[i].y > states[i - 1].y:
-                    commands.append("FR00")
+                    commands.append("FR{}".format(steps))
                 else:
-                    commands.append("BL00")
+                    commands.append("BL{}".format(steps))
             elif states[i].direction == Direction.SOUTH:
                 if states[i].y > states[i - 1].y:
-                    commands.append("BR00")
+                    commands.append("BR{}".format(steps))
                 else:
-                    commands.append("FL00")
+                    commands.append("FL{}".format(steps))
             else:
                 raise Exception("Invalid turing direction")
         else:
