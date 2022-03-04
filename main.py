@@ -13,6 +13,11 @@ CORS(app)
 model = load_model()
 
 
+@app.route('/status', methods=['GET'])
+def status():
+    return jsonify({"result": "ok"})
+
+
 @app.route('/path', methods=['POST'])
 def path_finding():
     content = request.json
