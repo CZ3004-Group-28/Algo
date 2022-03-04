@@ -23,7 +23,8 @@ def path_finding():
     content = request.json
 
     obstacles = content['obstacles']
-    maze_solver = MazeSolver(20, 20, 1, 1, Direction.NORTH, mode=content['mode'])
+    mode = content['mode']
+    maze_solver = MazeSolver(20, 20, 1, 1, Direction.NORTH, mode=mode)
 
     for ob in obstacles:
         maze_solver.add_obstacle(ob['x'], ob['y'], ob['d'], ob['id'])
@@ -34,7 +35,7 @@ def path_finding():
     print(time.time() - start)
     print(distance)
 
-    commands = command_generator(optimal_path)
+    commands = command_generator(optimal_path, mode)
     path_results = [optimal_path[0].get_dict()]
     i = 0
     for command in commands:
@@ -42,9 +43,9 @@ def path_finding():
             continue
         if command.startswith("FIN"):
             continue
-        elif command.startswith("FW"):
+        elif command.startswith("FW") or command.startswith("FS"):
             i += int(command[2:]) // 10
-        elif command.startswith("BW"):
+        elif command.startswith("BW") or command.startswith("BS"):
             i += int(command[2:]) // 10
         else:
             i += 1
