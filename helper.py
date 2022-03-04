@@ -22,7 +22,11 @@ def command_generator(states):
 
             else:
                 commands.append("BW10")
+
+            if states[i].screenshot_id != -1:
+                commands.append("SNAP{}".format(states[i].screenshot_id))
             continue
+
         else:
             if abs(states[i].x - states[i-1].x) in [2, 4]:
                 steps = "30"
