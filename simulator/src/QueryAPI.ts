@@ -1,9 +1,10 @@
 import BaseAPI, {methodType} from "./BaseAPI";
 
 export default class QueryAPI extends BaseAPI {
-	public static query(obstacles: any[], callback: any) {
+	public static query(obstacles: any[], mode: number, callback: any) {
 		const content = {
-			"obstacles": obstacles
+			"obstacles": obstacles,
+			"mode": mode
 		}
 
 		this.JSONRequest('/path', methodType.post, {}, {}, content)

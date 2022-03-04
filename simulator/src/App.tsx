@@ -68,6 +68,7 @@ function App() {
 	const [obstacles, setObstacles] = useState<CellState[]>([]);
 	const [obXInput, setObXInput] = useState<number | undefined>(undefined);
 	const [obYInput, setObYInput] = useState<number | undefined>(undefined);
+	const [modeInput, setModeInput] = useState<number>(0);
 	const [directionInput, setDirectionInput] = useState<ObDirection>(ObDirection.NORTH);
 	const [isComputing, setIsComputing] = useState<boolean>(false);
 	const [path, setPath] = useState<RobotCell[]>([]);
@@ -308,6 +309,11 @@ function App() {
 		setDirectionInput(event.target.value as Direction)
 	}
 
+	const onModeChange = (event: any) => {
+		// @ts-ignore
+		setModeInput(event.target.value);
+	}
+
 	const onRemoveObstacle = (ob: CellState) => {
 		if (path.length > 0 || isComputing) return;
 		const newObstacles = [];
@@ -322,7 +328,7 @@ function App() {
 
 	const compute = () => {
 		setIsComputing(true);
-		QueryAPI.query(obstacles, (data: any, err: any) => {
+		QueryAPI.query(obstacles, modeInput, (data: any, err: any) => {
 			if (data) {
 				setPath(data.data.path as RobotCell[]);
 				const commands = [];
@@ -380,7 +386,7 @@ function App() {
 						size='small'
 						variant="outlined"/>
 				</Grid>
-				<Grid item xs={3}>
+				<Grid item xs={2}>
 					<Select
 						labelId="demo-simple-select-label"
 						id="demo-simple-select"
@@ -393,6 +399,19 @@ function App() {
 						<MenuItem value={ObDirection.SOUTH}>South</MenuItem>
 						<MenuItem value={ObDirection.EAST}>East</MenuItem>
 						<MenuItem value={ObDirection.WEST}>West</MenuItem>
+					</Select>
+				</Grid>
+				<Grid item xs={2}>
+					<Select
+						labelId="demo-simple-select-label"
+						id="demo-simple-select"
+						value={modeInput}
+						label="Mode"
+						size="small"
+						onChange={onModeChange}
+					>
+						<MenuItem value={0}>1-3</MenuItem>
+						<MenuItem value={1}>2-4</MenuItem>
 					</Select>
 				</Grid>
 				<Grid item xs={3}>
