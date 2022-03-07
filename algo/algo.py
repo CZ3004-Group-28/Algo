@@ -95,8 +95,10 @@ class MazeSolver:
                 visited_candidates = [0] # add the start state of the robot
 
                 cur_index = 1
+                fixed_cost = 0 # the cost applying for the position taking obstacle pictures
                 for index, view_position in enumerate(cur_view_positions):
                     visited_candidates.append(cur_index + c[index])
+                    fixed_cost += view_position[c[index]].penalty
                     cur_index += len(view_position)
 
                 cost_np = np.zeros((len(visited_candidates), len(visited_candidates)))
@@ -112,11 +114,11 @@ class MazeSolver:
                         cost_np[e][s] = cost_np[s][e]
                 cost_np[:, 0] = 0
                 _permutation, _distance = solve_tsp_dynamic_programming(cost_np)
-                if _distance >= distance:
+                if _distance + fixed_cost >= distance:
                     continue
 
                 optimal_path = [items[0]]
-                distance = _distance
+                distance = _distance + fixed_cost
 
                 for i in range(len(_permutation) - 1):
                     from_item = items[visited_candidates[_permutation[i]]]

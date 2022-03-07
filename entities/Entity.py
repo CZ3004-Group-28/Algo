@@ -1,13 +1,14 @@
-from consts import Direction, EXPANDED_CELL, MOVE_DIRECTION
+from consts import Direction, EXPANDED_CELL, MOVE_DIRECTION, SCREENSHOT_COST
 from helper import is_valid
 
 
 class CellState:
-    def __init__(self, x, y, direction: Direction = Direction.NORTH, screenshot_id=-1):
+    def __init__(self, x, y, direction: Direction = Direction.NORTH, screenshot_id=-1, penalty=0):
         self.x = x
         self.y = y
         self.direction = direction
         self.screenshot_id = screenshot_id  # if screenshot_od != -1, the snapshot is taken at that position is for the obstacle with id = screenshot_id
+        self.penalty = penalty # penalty for the view point of taking picture
 
     def cmp_position(self, x, y) -> bool:
         return self.x == x and self.y == y
@@ -42,86 +43,86 @@ class Obstacle(CellState):
         if self.direction == Direction.NORTH:
             if is_valid(self.x, self.y + EXPANDED_CELL * 2):
                 cells.append(CellState(self.x, self.y + EXPANDED_CELL * 2,
-                                       Direction.SOUTH, self.obstacle_id))
+                                       Direction.SOUTH, self.obstacle_id, 0))
 
             if is_valid(self.x, self.y + 1 + EXPANDED_CELL * 2):
                 cells.append(CellState(self.x, self.y + 1 + EXPANDED_CELL * 2,
-                                       Direction.SOUTH, self.obstacle_id))
+                                       Direction.SOUTH, self.obstacle_id, 0))
 
             if is_valid(self.x, self.y + 2 + EXPANDED_CELL * 2):
                 cells.append(CellState(self.x, self.y + 2 + EXPANDED_CELL * 2,
-                                       Direction.SOUTH, self.obstacle_id))
+                                       Direction.SOUTH, self.obstacle_id, 0))
 
             if is_valid(self.x + 1, self.y + 1 + EXPANDED_CELL * 2):
                 cells.append(CellState(self.x + 1, self.y + 1 + EXPANDED_CELL * 2,
-                                       Direction.SOUTH, self.obstacle_id))
+                                       Direction.SOUTH, self.obstacle_id, SCREENSHOT_COST))
 
             if is_valid(self.x - 1, self.y + 1 + EXPANDED_CELL * 2):
                 cells.append(CellState(self.x - 1, self.y + 1 + EXPANDED_CELL * 2,
-                                       Direction.SOUTH, self.obstacle_id))
+                                       Direction.SOUTH, self.obstacle_id, SCREENSHOT_COST))
 
         elif self.direction == Direction.SOUTH:
             if is_valid(self.x, self.y - EXPANDED_CELL * 2):
                 cells.append(CellState(self.x, self.y - EXPANDED_CELL * 2,
-                                       Direction.NORTH, self.obstacle_id))
+                                       Direction.NORTH, self.obstacle_id, 0))
 
             if is_valid(self.x, self.y - 1 - EXPANDED_CELL * 2):
                 cells.append(CellState(self.x, self.y - 1 - EXPANDED_CELL * 2,
-                                       Direction.NORTH, self.obstacle_id))
+                                       Direction.NORTH, self.obstacle_id, 0))
 
             if is_valid(self.x, self.y - 2 - EXPANDED_CELL * 2):
                 cells.append(CellState(self.x, self.y - 2 - EXPANDED_CELL * 2,
-                                       Direction.NORTH, self.obstacle_id))
+                                       Direction.NORTH, self.obstacle_id, 0))
 
             if is_valid(self.x + 1, self.y - 1 - EXPANDED_CELL * 2):
                 cells.append(CellState(self.x + 1, self.y - 1 - EXPANDED_CELL * 2,
-                                       Direction.NORTH, self.obstacle_id))
+                                       Direction.NORTH, self.obstacle_id, SCREENSHOT_COST))
 
             if is_valid(self.x - 1, self.y - 1 - EXPANDED_CELL * 2):
                 cells.append(CellState(self.x - 1, self.y - 1 - EXPANDED_CELL * 2,
-                                       Direction.NORTH, self.obstacle_id))
+                                       Direction.NORTH, self.obstacle_id, SCREENSHOT_COST))
 
         elif self.direction == Direction.EAST:
             if is_valid(self.x + EXPANDED_CELL * 2, self.y):
                 cells.append(CellState(self.x + EXPANDED_CELL * 2, self.y,
-                                       Direction.WEST, self.obstacle_id))
+                                       Direction.WEST, self.obstacle_id, 0))
 
             if is_valid(self.x + 1 + EXPANDED_CELL * 2, self.y):
                 cells.append(CellState(self.x + 1 + EXPANDED_CELL * 2, self.y,
-                                       Direction.WEST, self.obstacle_id))
+                                       Direction.WEST, self.obstacle_id, 0))
 
             if is_valid(self.x + 2 + EXPANDED_CELL * 2, self.y):
                 cells.append(CellState(self.x + 2 + EXPANDED_CELL * 2, self.y,
-                                       Direction.WEST, self.obstacle_id))
+                                       Direction.WEST, self.obstacle_id, 0))
 
             if is_valid(self.x + 1 + EXPANDED_CELL * 2, self.y + 1):
                 cells.append(CellState(self.x + 1 + EXPANDED_CELL * 2, self.y + 1,
-                                       Direction.WEST, self.obstacle_id))
+                                       Direction.WEST, self.obstacle_id, SCREENSHOT_COST))
 
             if is_valid(self.x + 1 + EXPANDED_CELL * 2, self.y - 1):
                 cells.append(CellState(self.x + 1 + EXPANDED_CELL * 2, self.y - 1,
-                                       Direction.WEST, self.obstacle_id))
+                                       Direction.WEST, self.obstacle_id, SCREENSHOT_COST))
 
         elif self.direction == Direction.WEST:
             if is_valid(self.x - EXPANDED_CELL * 2, self.y):
                 cells.append(CellState(self.x - EXPANDED_CELL * 2, self.y,
-                                       Direction.EAST, self.obstacle_id))
+                                       Direction.EAST, self.obstacle_id, 0))
 
             if is_valid(self.x - 1 - EXPANDED_CELL * 2, self.y):
                 cells.append(CellState(self.x - 1 - EXPANDED_CELL * 2, self.y,
-                                       Direction.EAST, self.obstacle_id))
+                                       Direction.EAST, self.obstacle_id, 0))
 
             if is_valid(self.x - 2 - EXPANDED_CELL * 2, self.y):
                 cells.append(CellState(self.x - 2 - EXPANDED_CELL * 2, self.y,
-                                       Direction.EAST, self.obstacle_id))
+                                       Direction.EAST, self.obstacle_id, 0))
 
             if is_valid(self.x - 1 - EXPANDED_CELL * 2, self.y + 1):
                 cells.append(CellState(self.x - 1 - EXPANDED_CELL * 2, self.y + 1,
-                                       Direction.EAST, self.obstacle_id))
+                                       Direction.EAST, self.obstacle_id, SCREENSHOT_COST))
 
             if is_valid(self.x - 1 - EXPANDED_CELL * 2, self.y - 1):
                 cells.append(CellState(self.x - 1 - EXPANDED_CELL * 2, self.y - 1,
-                                       Direction.EAST, self.obstacle_id))
+                                       Direction.EAST, self.obstacle_id, SCREENSHOT_COST))
 
         return cells
 
