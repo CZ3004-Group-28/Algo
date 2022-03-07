@@ -27,7 +27,7 @@ class MazeSolver:
         if mode is None:
             self.mode = 0
         else:
-            self.mode = mode
+            self.mode = int(mode)
 
     def add_obstacle(self, x: int, y: int, direction: Direction, obstacle_id: int):
         obstacle = Obstacle(x, y, direction, obstacle_id)
