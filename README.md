@@ -32,6 +32,11 @@ The server will then be run at  ``localhost:5000``
 ```WEST```: 6
 
 ##### 1. POST request to /path:
+
++) Obstacles: the list of obstacles that need to navigate
+
++) big_turn: 0 -> turn 3-1; 1 -> turn 4-2
+
 Sample json request body:  
 ```bash
 {
@@ -68,7 +73,7 @@ Sample json request body:
             "d": 4
         }
     ], 
-    "mode" : 1
+    "big_turn" : 1
 }
 ```
 
@@ -81,26 +86,28 @@ Sample json response:
             "FR30",
             "BS30",
             "FL30",
-            "FS10",
             "SNAP1",
             "FR30",
-            "BS10",
+            "BS20",
             "FL30",
             "FS10",
             "SNAP2",
             "BS50",
             "FR30",
+            "FS10",
             "SNAP4",
-            "FL30",
-            "SNAP5",
-            "BS20",
-            "FL30",
-            "FL30",
-            "FS20",
+            "BL30",
+            "FS30",
             "SNAP3",
+            "BS20",
+            "BL30",
+            "BS10",
+            "BL30",
+            "FS10",
+            "SNAP5",
             "FIN"
         ],
-        "distance": 39.0,
+        "distance": 46.0,
         "path": [
             {
                 "d": 0,
@@ -122,63 +129,69 @@ Sample json response:
             },
             {
                 "d": 0,
-                "s": -1,
-                "x": 4,
-                "y": 7
-            },
-            {
-                "d": 0,
                 "s": 1,
                 "x": 4,
-                "y": 8
+                "y": 7
             },
             {
                 "d": 2,
                 "s": -1,
                 "x": 8,
-                "y": 10
+                "y": 9
             },
             {
                 "d": 2,
                 "s": -1,
-                "x": 7,
-                "y": 10
+                "x": 6,
+                "y": 9
             },
             {
                 "d": 0,
                 "s": -1,
-                "x": 9,
-                "y": 14
+                "x": 8,
+                "y": 13
             },
             {
                 "d": 0,
                 "s": 2,
-                "x": 9,
-                "y": 15
+                "x": 8,
+                "y": 14
             },
             {
                 "d": 0,
                 "s": -1,
-                "x": 9,
-                "y": 10
+                "x": 8,
+                "y": 9
+            },
+            {
+                "d": 2,
+                "s": -1,
+                "x": 12,
+                "y": 11
             },
             {
                 "d": 2,
                 "s": 4,
                 "x": 13,
-                "y": 12
+                "y": 11
             },
             {
-                "d": 0,
-                "s": 5,
-                "x": 15,
-                "y": 16
-            },
-            {
-                "d": 0,
+                "d": 4,
                 "s": -1,
-                "x": 15,
-                "y": 14
+                "x": 9,
+                "y": 13
+            },
+            {
+                "d": 4,
+                "s": 3,
+                "x": 9,
+                "y": 10
+            },
+            {
+                "d": 4,
+                "s": -1,
+                "x": 9,
+                "y": 12
             },
             {
                 "d": 6,
@@ -187,16 +200,22 @@ Sample json response:
                 "y": 16
             },
             {
-                "d": 4,
+                "d": 6,
                 "s": -1,
-                "x": 9,
-                "y": 12
+                "x": 12,
+                "y": 16
             },
             {
-                "d": 4,
-                "s": 3,
-                "x": 9,
-                "y": 10
+                "d": 0,
+                "s": -1,
+                "x": 16,
+                "y": 14
+            },
+            {
+                "d": 0,
+                "s": 5,
+                "x": 16,
+                "y": 15
             }
         ]
     },

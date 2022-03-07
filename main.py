@@ -22,9 +22,10 @@ def status():
 def path_finding():
     content = request.json
 
+    print("content: {}".format(content))
     obstacles = content['obstacles']
-    mode = content['mode']
-    maze_solver = MazeSolver(20, 20, 1, 1, Direction.NORTH, mode=mode)
+    big_turn = int(content['big_turn'])
+    maze_solver = MazeSolver(20, 20, 1, 1, Direction.NORTH, big_turn=big_turn)
 
     for ob in obstacles:
         maze_solver.add_obstacle(ob['x'], ob['y'], ob['d'], ob['id'])
@@ -35,7 +36,7 @@ def path_finding():
     print(time.time() - start)
     print(distance)
 
-    commands = command_generator(optimal_path, mode)
+    commands = command_generator(optimal_path, big_turn)
     path_results = [optimal_path[0].get_dict()]
     i = 0
     for command in commands:

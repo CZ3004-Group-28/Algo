@@ -5,7 +5,7 @@ def is_valid(center_x: int, center_y: int):
     return center_x > 0 and center_y > 0 and center_x < WIDTH - 1 and center_y < HEIGHT - 1
 
 
-def command_generator(states, mode):
+def command_generator(states, big_turn):
     commands = []
 
     for i in range(1, len(states)):
@@ -14,20 +14,20 @@ def command_generator(states, mode):
             if (states[i].x > states[i - 1].x and states[i].direction == Direction.EAST) or (
                     states[i].y > states[i - 1].y and states[i].direction == Direction.NORTH):
 
-                if mode == 0:
+                if big_turn == 0:
                     commands.append("FW10")
                 else:
                     commands.append("FS10")
 
             elif (states[i].x < states[i-1].x and states[i].direction == Direction.WEST) or(
                     states[i].y < states[i-1].y and states[i].direction == Direction.SOUTH):
-                if mode == 0:
+                if big_turn == 0:
                     commands.append("FW10")
                 else:
                     commands.append("FS10")
 
             else:
-                if mode == 0:
+                if big_turn == 0:
                     commands.append("BW10")
                 else:
                     commands.append("BS10")

@@ -6,7 +6,7 @@ from entities.Entity import Obstacle, CellState, Grid, GridFastestCar
 from consts import Direction, MOVE_DIRECTION, TURN_FACTOR, ITERATIONS, TURN_RADIUS, SAFE_COST
 from python_tsp.exact import solve_tsp_dynamic_programming
 
-turn_wrt_modes = [[3 * TURN_RADIUS, TURN_RADIUS],
+turn_wrt_big_turns = [[3 * TURN_RADIUS, TURN_RADIUS],
                   [4 * TURN_RADIUS, 2 * TURN_RADIUS]]
 
 
@@ -18,16 +18,16 @@ class MazeSolver:
             robot_x: int,
             robot_y: int,
             robot_direction: Direction,
-            mode=None # the mode here is to allow 3-1 turn(0 - by default) | 4-2 turn(1)
+            big_turn=None # the big_turn here is to allow 3-1 turn(0 - by default) | 4-2 turn(1)
     ):
         self.grid = Grid(size_x, size_y)
         self.robot = Robot(robot_x, robot_y, robot_direction)
         self.path_table = dict()
         self.cost_table = dict()
-        if mode is None:
-            self.mode = 0
+        if big_turn is None:
+            self.big_turn = 0
         else:
-            self.mode = int(mode)
+            self.big_turn = int(big_turn)
 
     def add_obstacle(self, x: int, y: int, direction: Direction, obstacle_id: int):
         obstacle = Obstacle(x, y, direction, obstacle_id)
@@ -175,31 +175,31 @@ class MazeSolver:
                     neighbors.append((x - dx, y - dy, md, safe_cost))
 
             else:  # consider 8 case
-                bigger_change = turn_wrt_modes[self.mode][0]
-                smaller_change = turn_wrt_modes[self.mode][1]
+                bigger_change = turn_wrt_big_turns[self.big_turn][0]
+                smaller_change = turn_wrt_big_turns[self.big_turn][1]
                 # north <-> east
                 if direction == Direction.NORTH and md == Direction.EAST:
                     if self.grid.reachable(x + bigger_change, y + smaller_change):
-                        if self.mode == 1 and not self.grid.reachable(x + bigger_change // 2, y + smaller_change // 2):
+                        if self.big_turn == 1 and not self.grid.reachable(x + bigger_change // 2, y + smaller_change // 2):
                             continue
                         safe_cost = self.get_safe_cost(x + bigger_change, y + smaller_change)
                         neighbors.append((x + bigger_change, y + smaller_change, md, safe_cost))
 
                     if self.grid.reachable(x - smaller_change, y - bigger_change):
-                        if self.mode == 1 and not self.grid.reachable(x - smaller_change // 2, y - bigger_change // 2):
+                        if self.big_turn == 1 and not self.grid.reachable(x - smaller_change // 2, y - bigger_change // 2):
                             continue
                         safe_cost = self.get_safe_cost(x - smaller_change, y - bigger_change)
                         neighbors.append((x - smaller_change, y - bigger_change, md, safe_cost))
 
                 if direction == Direction.EAST and md == Direction.NORTH:
                     if self.grid.reachable(x + smaller_change, y + bigger_change):
-                        if self.mode == 1 and not self.grid.reachable(x + smaller_change // 2, y + bigger_change // 2):
+                        if self.big_turn == 1 and not self.grid.reachable(x + smaller_change // 2, y + bigger_change // 2):
                             continue
                         safe_cost = self.get_safe_cost(x + smaller_change, y + bigger_change)
                         neighbors.append((x + smaller_change, y + bigger_change, md, safe_cost))
 
                     if self.grid.reachable(x - bigger_change, y - smaller_change):
-                        if self.mode == 1 and not self.grid.reachable(x - bigger_change // 2, y - smaller_change // 2):
+                        if self.big_turn == 1 and not self.grid.reachable(x - bigger_change // 2, y - smaller_change // 2):
                             continue
                         safe_cost = self.get_safe_cost(x - bigger_change, y - smaller_change)
                         neighbors.append((x - bigger_change, y - smaller_change, md, safe_cost))
@@ -207,26 +207,26 @@ class MazeSolver:
                 # east <-> south
                 if direction == Direction.EAST and md == Direction.SOUTH:
                     if self.grid.reachable(x + smaller_change, y - bigger_change):
-                        if self.mode == 1 and not self.grid.reachable(x + smaller_change // 2, y - bigger_change // 2):
+                        if self.big_turn == 1 and not self.grid.reachable(x + smaller_change // 2, y - bigger_change // 2):
                             continue
                         safe_cost = self.get_safe_cost(x + smaller_change, y - bigger_change)
                         neighbors.append((x + smaller_change, y - bigger_change, md, safe_cost))
 
                     if self.grid.reachable(x - bigger_change, y + smaller_change):
-                        if self.mode == 1 and not self.grid.reachable(x - bigger_change // 2, y + smaller_change // 2):
+                        if self.big_turn == 1 and not self.grid.reachable(x - bigger_change // 2, y + smaller_change // 2):
                             continue
                         safe_cost = self.get_safe_cost(x - bigger_change, y + smaller_change)
                         neighbors.append((x - bigger_change, y + smaller_change, md, safe_cost))
 
                 if direction == Direction.SOUTH and md == Direction.EAST:
                     if self.grid.reachable(x + bigger_change, y - smaller_change):
-                        if self.mode == 1 and not self.grid.reachable(x + bigger_change // 2, y - smaller_change // 2):
+                        if self.big_turn == 1 and not self.grid.reachable(x + bigger_change // 2, y - smaller_change // 2):
                             continue
                         safe_cost = self.get_safe_cost(x + bigger_change, y - smaller_change)
                         neighbors.append((x + bigger_change, y - smaller_change, md, safe_cost))
 
                     if self.grid.reachable(x - smaller_change, y + bigger_change):
-                        if self.mode == 1 and not self.grid.reachable(x - smaller_change // 2, y + bigger_change // 2):
+                        if self.big_turn == 1 and not self.grid.reachable(x - smaller_change // 2, y + bigger_change // 2):
                             continue
                         safe_cost = self.get_safe_cost(x - smaller_change, y + bigger_change)
                         neighbors.append((x - smaller_change, y + bigger_change, md, safe_cost))
@@ -234,26 +234,26 @@ class MazeSolver:
                 # south <-> west
                 if direction == Direction.SOUTH and md == Direction.WEST:
                     if self.grid.reachable(x - bigger_change, y - smaller_change):
-                        if self.mode == 1 and not self.grid.reachable(x - bigger_change // 2, y - smaller_change // 2):
+                        if self.big_turn == 1 and not self.grid.reachable(x - bigger_change // 2, y - smaller_change // 2):
                             continue
                         safe_cost = self.get_safe_cost(x - bigger_change, y - smaller_change)
                         neighbors.append((x - bigger_change, y - smaller_change, md, safe_cost))
 
                     if self.grid.reachable(x + smaller_change, y + bigger_change):
-                        if self.mode == 1 and not self.grid.reachable(x + smaller_change // 2, y + bigger_change // 2):
+                        if self.big_turn == 1 and not self.grid.reachable(x + smaller_change // 2, y + bigger_change // 2):
                             continue
                         safe_cost = self.get_safe_cost(x + smaller_change, y + bigger_change)
                         neighbors.append((x + smaller_change, y + bigger_change, md, safe_cost))
 
                 if direction == Direction.WEST and md == Direction.SOUTH:
                     if self.grid.reachable(x - smaller_change, y - bigger_change):
-                        if self.mode == 1 and not self.grid.reachable(x - smaller_change // 2, y - bigger_change // 2):
+                        if self.big_turn == 1 and not self.grid.reachable(x - smaller_change // 2, y - bigger_change // 2):
                             continue
                         safe_cost = self.get_safe_cost(x - smaller_change, y - bigger_change)
                         neighbors.append((x - smaller_change, y - bigger_change, md, safe_cost))
 
                     if self.grid.reachable(x + bigger_change, y + smaller_change):
-                        if self.mode == 1 and not self.grid.reachable(x + bigger_change // 2, y + smaller_change // 2):
+                        if self.big_turn == 1 and not self.grid.reachable(x + bigger_change // 2, y + smaller_change // 2):
                             continue
                         safe_cost = self.get_safe_cost(x + bigger_change, y + smaller_change)
                         neighbors.append((x + bigger_change, y + smaller_change, md, safe_cost))
@@ -261,26 +261,26 @@ class MazeSolver:
                 # west <-> north
                 if direction == Direction.WEST and md == Direction.NORTH:
                     if self.grid.reachable(x - smaller_change, y + bigger_change):
-                        if self.mode == 1 and not self.grid.reachable(x - smaller_change // 2, y + bigger_change // 2):
+                        if self.big_turn == 1 and not self.grid.reachable(x - smaller_change // 2, y + bigger_change // 2):
                             continue
                         safe_cost = self.get_safe_cost(x - smaller_change, y + bigger_change)
                         neighbors.append((x - smaller_change, y + bigger_change, md, safe_cost))
 
                     if self.grid.reachable(x + bigger_change, y - smaller_change):
-                        if self.mode == 1 and not self.grid.reachable(x + bigger_change // 2, y - smaller_change // 2):
+                        if self.big_turn == 1 and not self.grid.reachable(x + bigger_change // 2, y - smaller_change // 2):
                             continue
                         safe_cost = self.get_safe_cost(x + bigger_change, y - smaller_change)
                         neighbors.append((x + bigger_change, y - smaller_change, md, safe_cost))
 
                 if direction == Direction.NORTH and md == Direction.WEST:
                     if self.grid.reachable(x + smaller_change, y - bigger_change):
-                        if self.mode == 1 and not self.grid.reachable(x + smaller_change // 2, y - bigger_change // 2):
+                        if self.big_turn == 1 and not self.grid.reachable(x + smaller_change // 2, y - bigger_change // 2):
                             continue
                         safe_cost = self.get_safe_cost(x + smaller_change, y - bigger_change)
                         neighbors.append((x + smaller_change, y - bigger_change, md, safe_cost))
 
                     if self.grid.reachable(x - bigger_change, y + smaller_change):
-                        if self.mode == 1 and not self.grid.reachable(x - bigger_change // 2, y + smaller_change // 2):
+                        if self.big_turn == 1 and not self.grid.reachable(x - bigger_change // 2, y + smaller_change // 2):
                             continue
                         safe_cost = self.get_safe_cost(x - bigger_change, y + smaller_change)
                         neighbors.append((x - bigger_change, y + smaller_change, md, safe_cost))
@@ -393,8 +393,8 @@ class FastCarSolver:
                     neighbors.append((x - dx, y - dy, md))
 
             else:  # consider 8 case
-                bigger_change = turn_wrt_modes[self.mode][0]
-                smaller_change = turn_wrt_modes[self.mode][1]
+                bigger_change = turn_wrt_big_turns[self.big_turn][0]
+                smaller_change = turn_wrt_big_turns[self.big_turn][1]
                 # north <-> east
                 if direction == Direction.NORTH and md == Direction.EAST:
                     if self.grid.reachable(x + bigger_change, y + smaller_change):
