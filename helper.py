@@ -10,35 +10,25 @@ def command_generator(states, big_turn):
 
     for i in range(1, len(states)):
         steps = "00"
+        if big_turn:
+            steps = "30"
+
         if states[i].direction == states[i - 1].direction:
             if (states[i].x > states[i - 1].x and states[i].direction == Direction.EAST) or (
                     states[i].y > states[i - 1].y and states[i].direction == Direction.NORTH):
-
-                if big_turn == 0:
-                    commands.append("FW10")
-                else:
-                    commands.append("FS10")
+                commands.append("FW10")
 
             elif (states[i].x < states[i-1].x and states[i].direction == Direction.WEST) or(
                     states[i].y < states[i-1].y and states[i].direction == Direction.SOUTH):
-                if big_turn == 0:
-                    commands.append("FW10")
-                else:
-                    commands.append("FS10")
+                commands.append("FW10")
 
             else:
-                if big_turn == 0:
-                    commands.append("BW10")
-                else:
-                    commands.append("BS10")
+                commands.append("BW10")
 
             if states[i].screenshot_id != -1:
                 commands.append("SNAP{}".format(states[i].screenshot_id))
             continue
 
-        else:
-            if abs(states[i].x - states[i-1].x) in [2, 4]:
-                steps = "30"
         # assume there are 4 turning command: FR, FL, BL, BR (the turn command will turn the car 90 degree)
         # FR00 | FR30: Forward Right;
         # FL00 | FL30: Forward Left;
@@ -118,22 +108,10 @@ def command_generator(states, big_turn):
                 compressed_commands[-1] = "BW{}".format(steps + 10)
                 continue
 
-        if commands[i].startswith("BS") and compressed_commands[-1].startswith("BS"):
-            steps = int(compressed_commands[-1][2:])
-            if steps != 90:
-                compressed_commands[-1] = "BS{}".format(steps + 10)
-                continue
-
         elif commands[i].startswith("FW") and compressed_commands[-1].startswith("FW"):
             steps = int(compressed_commands[-1][2:])
             if steps != 90:
                 compressed_commands[-1] = "FW{}".format(steps + 10)
-                continue
-
-        elif commands[i].startswith("FS") and compressed_commands[-1].startswith("FS"):
-            steps = int(compressed_commands[-1][2:])
-            if steps != 90:
-                compressed_commands[-1] = "FS{}".format(steps + 10)
                 continue
 
         compressed_commands.append(commands[i])
