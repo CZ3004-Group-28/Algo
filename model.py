@@ -21,7 +21,9 @@ def predict_image(image, model):
     results.save('runs')
     df_results = results.pandas().xyxy[0]
     df_results['bboxHt'] = df_results['ymax'] - df_results['ymin']
-    df_results = df_results.sort_values('bboxHt', ascending=True)  # Label with largest bbox height will be last
+    df_results['bboxWd'] = df_results['xmax'] - df_results['xmin']
+    df_results['bboxArea'] = df_results['bboxHt'] * df_results['bboxWd']
+    df_results = df_results.sort_values('bboxArea', ascending=True)  # Label with largest bbox height will be last
     pred_list = df_results['name'].to_numpy()
     pred = 'NA'
     # This if statement will ignore Bullseye unless they are the only image detected and select the last label in
